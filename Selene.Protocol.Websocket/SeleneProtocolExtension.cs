@@ -1,5 +1,5 @@
-﻿using System;
-using Selene.Configuration;
+﻿using Selene.Configuration;
+using System;
 
 namespace Selene.Protocol.Websocket
 {
@@ -11,7 +11,6 @@ namespace Selene.Protocol.Websocket
             if (messageProtocolConfiguration == null)
                 throw new ArgumentNullException(nameof(messageProtocolConfiguration));
 
-            
             return messageProtocolConfiguration;
         }
     }

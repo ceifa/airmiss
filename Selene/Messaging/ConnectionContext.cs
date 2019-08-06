@@ -1,13 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Selene.Messaging
 {
     public class ConnectionContext
     {
-        private string ConnectionId { get; set; }
+        internal ConnectionContext(string connectionId)
+        {
+            ConnectionId = connectionId;
+        }
 
-        public IDictionary<object, object> Items { get; set; }
+        public string ConnectionId { get; set; }
+
+        public IDictionary<object, object> Bag { get; set; }
     }
 }

@@ -13,24 +13,32 @@ namespace Selene.Processor
     {
         private readonly IMessageProcessorDescriptorProvider _messageProcessorDescriptorProvider;
         private readonly ITypeActivatorCache _typeActivatorCache;
+        private readonly INodeConnectionManager _nodeConnectionManager;
 
         internal MessageProcessor(IMessageProcessorDescriptorProvider messageProcessorDescriptorProvider,
-            ITypeActivatorCache typeActivatorCache)
+            ITypeActivatorCache typeActivatorCache, INodeConnectionManager nodeConnectionManager)
         {
             _messageProcessorDescriptorProvider = messageProcessorDescriptorProvider ??
                                                   throw new ArgumentNullException(
                                                       nameof(messageProcessorDescriptorProvider));
             _typeActivatorCache = typeActivatorCache ?? throw new ArgumentNullException(nameof(typeActivatorCache));
+            _nodeConnectionManager = nodeConnectionManager ?? throw new ArgumentNullException(nameof(nodeConnectionManager));
         }
 
-        public async Task<object> ProcessAsync(string route, Verb verb, object content,
+        public async Task<object> ProcessAsync(string connectionId, string route, Verb verb, object content,
             CancellationToken cancellationToken)
         {
             var descriptor = _messageProcessorDescriptorProvider.GetDescriptor(route, verb);
             var hubInstance = _typeActivatorCache.GetInstance(descriptor.MessageProcessorDescriptor.HubType);
+            var connectionContext = _nodeConnectionManager.GetConnectionContext(connectionId);
 
             try
             {
+                if (hubInstance is MessageProcessorHub messageProcessorHub)
+                {
+                    messageProcessorHub.Context = connectionContext;
+                }
+
                 var messageProcessorMethod = descriptor.MessageProcessorDescriptor.MessageProcessor;
                 var parameters = GetParameters(messageProcessorMethod.GetParameters(), descriptor.Variables, content,
                     cancellationToken);
@@ -50,6 +58,7 @@ namespace Selene.Processor
             finally
             {
                 _typeActivatorCache.Release(hubInstance);
+                _nodeConnectionManager.SetConnectionContext(connectionContext);
             }
         }
 
@@ -65,7 +74,7 @@ namespace Selene.Processor
 
                 if (e.GetCustomAttribute<ContentAttribute>() != null || e.Name == nameof(content)) return content;
 
-                return null;
+                return default;
             });
         }
     }
