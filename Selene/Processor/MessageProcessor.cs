@@ -25,10 +25,10 @@ namespace Selene.Processor
             _nodeConnectionManager = nodeConnectionManager ?? throw new ArgumentNullException(nameof(nodeConnectionManager));
         }
 
-        public async Task<object> ProcessAsync(string connectionId, string route, Verb verb, object content,
+        public async Task<object> ProcessAsync(string connectionId, Message message,
             CancellationToken cancellationToken)
         {
-            var descriptor = _messageProcessorDescriptorProvider.GetDescriptor(route, verb);
+            var descriptor = _messageProcessorDescriptorProvider.GetDescriptor(message.Route, message.Verb);
             var hubInstance = _typeActivatorCache.GetInstance(descriptor.MessageProcessorDescriptor.HubType);
             var connectionContext = _nodeConnectionManager.GetConnectionContext(connectionId);
 
@@ -40,7 +40,7 @@ namespace Selene.Processor
                 }
 
                 var messageProcessorMethod = descriptor.MessageProcessorDescriptor.MessageProcessor;
-                var parameters = GetParameters(messageProcessorMethod.GetParameters(), descriptor.Variables, content,
+                var parameters = GetParameters(messageProcessorMethod.GetParameters(), descriptor.Variables, message.Content,
                     cancellationToken);
                 var messageProcessorResult = messageProcessorMethod.Invoke(hubInstance, parameters.ToArray());
 

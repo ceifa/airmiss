@@ -5,12 +5,13 @@ namespace Selene.Protocol.Websocket.Listener
 {
     internal class WebSocketClient
     {
-        private string Id { get; }
+        internal string Id { get; }
 
-        private IWebSocketConnection WebSocketConnection { get; }
+        internal IWebSocketConnection WebSocketConnection { get; }
 
         internal WebSocketClient(IWebSocketConnection webSocketConnection)
         {
+            Id = Guid.NewGuid().ToString();
             WebSocketConnection = webSocketConnection ?? throw new ArgumentNullException(nameof(webSocketConnection));
         }
     }

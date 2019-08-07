@@ -6,6 +6,6 @@ namespace Selene.Processor
 {
     public interface IMessageProcessor
     {
-        Task<object> ProcessAsync(string connectionId, string route, Verb verb, object content, CancellationToken cancellationToken);
+        Task<object> ProcessAsync(string connectionId, Message message, CancellationToken cancellationToken);
     }
 }

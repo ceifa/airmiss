@@ -1,6 +1,11 @@
-﻿namespace Selene.Protocol.Websocket.Listener
+﻿using Selene.Processor;
+using System;
+using System.Threading;
+
+namespace Selene.Protocol.Websocket.Listener
 {
-    public interface IWebsocketListener
+    public interface IWebsocketListener : IDisposable
     {
+        void Start(IMessageProcessor messageProcessor, CancellationToken cancellationToken);
     }
 }
