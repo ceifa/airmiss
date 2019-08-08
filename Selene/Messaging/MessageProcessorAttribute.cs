@@ -13,8 +13,8 @@ namespace Selene.Messaging
             Verb = verb;
         }
 
-        public string Path { get; set; }
+        internal string Path { get; set; }
 
-        public Verb Verb { get; set; }
+        internal Verb Verb { get; set; }
     }
 }

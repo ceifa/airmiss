@@ -2,6 +2,7 @@
 using Selene.Messaging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
@@ -21,7 +22,7 @@ namespace Selene.Providers
 
         public MessageProcessorContext GetDescriptor(string route, Verb verb)
         {
-            var paths = route.Split('/');
+            var paths = route.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar).Split('/');
             var matches = (from messageProcessorDescriptor in _messageProcessorDescriptors
                            where messageProcessorDescriptor.Verb.Equals(verb)
                            let variablePaths = new Dictionary<string, string>()
@@ -39,15 +40,16 @@ namespace Selene.Providers
                            where match
                            select new MessageProcessorContext(messageProcessorDescriptor, variablePaths)).ToArray();
 
-            switch (matches.Length)
+            matches = new[]
             {
-                case 0:
-                    throw new ProcessorNotFoundException($"Route '{route}' not found");
-                case 1:
-                    return matches[0];
-                default:
-                    throw new InvalidOperationException($"Route '{route}' matched more than one message processor");
-            }
+                new MessageProcessorContext(_messageProcessorDescriptors[0], new Dictionary<string, string>())
+            };
+            return matches.Length switch
+            {
+                0 => throw new ProcessorNotFoundException($"Route '{route}' not found"),
+                1 => matches[0],
+                _ => throw new InvalidOperationException($"Route '{route}' matched more than one message processor"),
+            };
         }
 
         private static string GetRouteVariableName(string path)
