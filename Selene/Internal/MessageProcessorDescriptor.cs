@@ -1,4 +1,5 @@
-﻿using Selene.Messaging;
+﻿using Selene.Internal;
+using Selene.Messaging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,18 +9,18 @@ namespace Selene
 {
     internal class MessageProcessorDescriptor
     {
-        internal MessageProcessorDescriptor(Type hubType, IEnumerable<string> paths, Verb verb,
+        internal MessageProcessorDescriptor(Type hubType, IEnumerable<Route> routes, Verb verb,
             MethodInfo messageProcessor)
         {
             HubType = hubType ?? throw new ArgumentNullException(nameof(hubType));
-            Paths = paths?.ToArray() ?? throw new ArgumentNullException(nameof(paths));
+            Routes = routes?.ToArray() ?? throw new ArgumentNullException(nameof(routes));
             Verb = verb;
             MessageProcessor = messageProcessor ?? throw new ArgumentNullException(nameof(messageProcessor));
         }
 
         public Type HubType { get; }
 
-        public string[] Paths { get; }
+        public Route[] Routes { get; }
 
         public Verb Verb { get; }
 

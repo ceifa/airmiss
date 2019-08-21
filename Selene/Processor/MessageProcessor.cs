@@ -25,7 +25,7 @@ namespace Selene.Processor
             _nodeConnectionManager = nodeConnectionManager ?? throw new ArgumentNullException(nameof(nodeConnectionManager));
         }
 
-        public async Task<object> ProcessAsync(string connectionId, Message message,
+        public async Task<T> ProcessAsync<T>(string connectionId, Message message,
             CancellationToken cancellationToken)
         {
             var descriptor = _messageProcessorDescriptorProvider.GetDescriptor(message.Route, message.Verb);
@@ -46,13 +46,15 @@ namespace Selene.Processor
 
                 switch (messageProcessorResult)
                 {
-                    case Task<object> genericTask:
+                    case Task<T> genericTask:
                         return await genericTask;
                     case Task task:
                         await task;
-                        return null;
+                        return default;
+                    case T resultObject:
+                        return resultObject;
                     default:
-                        return messageProcessorResult;
+                        throw new InvalidCastException($"Value returned from message processor is not of type {typeof(T).Name}");
                 }
             }
             finally

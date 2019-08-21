@@ -1,4 +1,4 @@
-﻿using Selene.Exceptions;
+﻿using Selene.Internal.Exceptions;
 using Selene.Messaging;
 using System;
 using System.Collections.Generic;
@@ -26,13 +26,13 @@ namespace Selene.Providers
             var matches = (from messageProcessorDescriptor in _messageProcessorDescriptors
                            where messageProcessorDescriptor.Verb.Equals(verb)
                            let variablePaths = new Dictionary<string, string>()
-                           from messageProcessorPath in messageProcessorDescriptor.Paths
+                           from messageProcessorPath in messageProcessorDescriptor.Routes
                            let match = paths.All(path =>
                            {
                                var variableName = GetRouteVariableName(path);
 
                                if (variableName == null)
-                                   return path == messageProcessorPath;
+                                   return path == messageProcessorPath.ToString();
 
                                variablePaths.Add(variableName.ToLowerInvariant(), path);
                                return true;

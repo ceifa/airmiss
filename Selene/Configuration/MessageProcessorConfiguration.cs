@@ -1,4 +1,5 @@
-﻿using Selene.Extensions;
+﻿using Selene.Internal;
+using Selene.Internal.Extensions;
 using Selene.Messaging;
 using System;
 using System.Collections.Generic;
@@ -81,8 +82,8 @@ namespace Selene.Configuration
             if (messageProcessor == null)
                 throw new ArgumentNullException(nameof(messageProcessor));
 
-            var sanitizedPaths = paths.Select(StringExtensions.SanitizePath);
-            var descriptor = new MessageProcessorDescriptor(hubType, sanitizedPaths, verb, messageProcessor);
+            var routes = paths.Select(p => new Route(p).EnsureIsValid());
+            var descriptor = new MessageProcessorDescriptor(hubType, routes, verb, messageProcessor);
 
             _addMessageProcessor(descriptor);
 

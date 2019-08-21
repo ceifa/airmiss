@@ -1,4 +1,4 @@
-﻿using Selene.Exceptions;
+﻿using Selene.Internal.Exceptions;
 using Selene.Internal.Extensions;
 using System;
 using System.Collections.Generic;

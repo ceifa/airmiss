@@ -30,7 +30,7 @@ namespace Selene.Protocol.Websocket.Listener
                 socket.OnMessage = async data =>
                 {
                     var message = data.GetMessage();
-                    var result = await messageProcessor.ProcessAsync(webSocketClient.Id, message, cancellationToken);
+                    var result = await messageProcessor.ProcessAsync<object>(webSocketClient.Id, message, cancellationToken);
 
                     if (result != null)
                     {
