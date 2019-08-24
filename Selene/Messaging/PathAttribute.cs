@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Selene.Internal;
+using System;
 
 namespace Selene.Messaging
 {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Selene.Internal;
+using System;
 
 namespace Selene.Messaging
 {
@@ -15,5 +16,7 @@ namespace Selene.Messaging
         }
 
         public string PathPrefix { get; set; }
+
+        internal Route AsRoute() => new Route(PathPrefix);
     }
 }

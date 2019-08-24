@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Selene.Internal;
+using System;
 
 namespace Selene.Messaging
 {
@@ -16,5 +17,7 @@ namespace Selene.Messaging
         internal string Path { get; set; }
 
         internal Verb Verb { get; set; }
+
+        internal Route AsRoute() => new Route(Path);
     }
 }

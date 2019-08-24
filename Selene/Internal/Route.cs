@@ -7,21 +7,45 @@ using System.Text.RegularExpressions;
 
 namespace Selene.Internal
 {
-    public class Route
+    public struct Route
     {
         private const char RouteSeparator = '/';
         private static readonly Regex RouteRepetitionsRegex = new Regex($"{Regex.Escape(RouteSeparator.ToString())}+", RegexOptions.Compiled);
 
-        public string[] RouteTokens => _routeTokens.Value;
+        private string[] RouteTokens => _routeTokens.Value;
 
         private readonly string _route;
         private readonly Lazy<string[]> _routeTokens;
+
+        public Route(Uri route) : this(route.AbsoluteUri)
+        {
+        }
 
         public Route(string route)
         {
             _route = route;
             _routeTokens = new Lazy<string[]>(() => GetRouteTokens(SanitizeRoute(route)));
         }
+
+        public Route EnsureIsValid()
+        {
+            if (string.IsNullOrWhiteSpace(_route))
+                throw new InvalidRouteException("Route cannot be empty");
+
+            if (RouteTokens.Length == 0)
+                throw new InvalidRouteException(_route);
+
+            return this;
+        }
+
+        public Route Combine(Route target)
+        {
+            return new Route($"{this}{RouteSeparator}{target}");
+        }
+
+        public static Route operator +(Route left, Route right) => left.Combine(right);
+
+        public override string ToString() => _route;
 
         private static string SanitizeRoute(string route)
         {
@@ -36,17 +60,5 @@ namespace Selene.Internal
         {
             return route.Split(RouteSeparator, StringSplitOptions.RemoveEmptyEntries);
         }
-
-        public Route EnsureIsValid()
-        {
-            if (string.IsNullOrWhiteSpace(_route) || RouteTokens.Length != 0)
-            {
-                throw new InvalidRouteException($"Route '{_route}' is not valid");
-            }
-
-            return this;
-        }
-
-        public override string ToString() => _route;
     }
 }

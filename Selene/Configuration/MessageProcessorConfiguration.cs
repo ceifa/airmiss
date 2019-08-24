@@ -52,13 +52,12 @@ namespace Selene.Configuration
 
                     foreach (var hubMethodAttribute in hubMethodAttributes)
                     {
-                        var paths = hubTypeAttributes
-                            .Select(attribute => Path.Combine(attribute.PathPrefix, hubMethodAttribute.Path)).ToArray();
+                        var hubMethodRoute = hubMethodAttribute.AsRoute();
 
-                        if (paths.Any(string.IsNullOrWhiteSpace))
-                            throw new ArgumentException($"Hub ${hubType.FullName} has empty path methods");
+                        var routes = hubTypeAttributes
+                            .Select(attribute => attribute.AsRoute() + hubMethodRoute);
 
-                        Add(hubType, paths, hubMethodAttribute.Verb, hubMethod);
+                        Add(hubType, routes, hubMethodAttribute.Verb, hubMethod);
                     }
                 }
             }
@@ -66,24 +65,23 @@ namespace Selene.Configuration
             return _seleneConfiguration;
         }
 
-        public SeleneConfiguration Add<THub>(IEnumerable<string> paths, Verb verb, MethodInfo messageProcessor)
+        public SeleneConfiguration Add<THub>(IEnumerable<Route> routes, Verb verb, MethodInfo messageProcessor)
         {
-            return Add(typeof(THub), paths, verb, messageProcessor);
+            return Add(typeof(THub), routes, verb, messageProcessor);
         }
 
-        public SeleneConfiguration Add(Type hubType, IEnumerable<string> paths, Verb verb, MethodInfo messageProcessor)
+        public SeleneConfiguration Add(Type hubType, IEnumerable<Route> routes, Verb verb, MethodInfo messageProcessor)
         {
             if (hubType == null)
                 throw new ArgumentNullException(nameof(hubType));
 
-            if (paths == null)
-                throw new ArgumentNullException(nameof(paths));
+            if (routes == null)
+                throw new ArgumentNullException(nameof(routes));
 
             if (messageProcessor == null)
                 throw new ArgumentNullException(nameof(messageProcessor));
 
-            var routes = paths.Select(p => new Route(p).EnsureIsValid());
-            var descriptor = new MessageProcessorDescriptor(hubType, routes, verb, messageProcessor);
+            var descriptor = new MessageProcessorDescriptor(hubType, routes.Select(r => r.EnsureIsValid()), verb, messageProcessor);
 
             _addMessageProcessor(descriptor);
 
