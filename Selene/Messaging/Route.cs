@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Selene.Internal
+namespace Selene.Messaging
 {
     public struct Route
     {
