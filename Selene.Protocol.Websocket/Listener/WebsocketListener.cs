@@ -10,7 +10,7 @@ using Selene.Protocol.Websocket.Extensions;
 
 namespace Selene.Protocol.Websocket.Listener
 {
-    public class WebsocketListener : IWebsocketListener
+    internal class WebsocketListener : IWebsocketListener
     {
         private readonly List<WebSocketClient> _openConnections;
         private readonly IWebSocketServer _webSocketServer;
@@ -46,7 +46,7 @@ namespace Selene.Protocol.Websocket.Listener
                     }
                     catch (Exception ex)
                     {
-                        await socket.Send(new SeleneException(Reason.GENERIC_ERROR, ex.Message).SerializeJson());
+                        await socket.Send(new SeleneException(Reason.GenericError, ex.Message).SerializeJson());
                     }
                 };
             });

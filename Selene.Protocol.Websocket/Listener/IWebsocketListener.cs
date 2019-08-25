@@ -4,7 +4,7 @@ using Selene.Processor;
 
 namespace Selene.Protocol.Websocket.Listener
 {
-    public interface IWebsocketListener : IDisposable
+    internal interface IWebsocketListener : IDisposable
     {
         void Start(IMessageProcessor messageProcessor, CancellationToken cancellationToken);
     }

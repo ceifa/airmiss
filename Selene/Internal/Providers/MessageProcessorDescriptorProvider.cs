@@ -9,8 +9,6 @@ namespace Selene.Internal.Providers
 {
     internal class MessageProcessorDescriptorProvider : IMessageProcessorDescriptorProvider
     {
-        private static readonly Regex RouteVariableRegex = new Regex(@"^\{(.*?)\}$", RegexOptions.Compiled);
-
         private readonly MessageProcessorDescriptor[] _messageProcessorDescriptors;
 
         internal MessageProcessorDescriptorProvider(IEnumerable<MessageProcessorDescriptor> messageProcessorDescriptors)

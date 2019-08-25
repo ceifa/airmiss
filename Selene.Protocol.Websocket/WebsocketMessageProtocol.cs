@@ -6,7 +6,7 @@ using Selene.Protocol.Websocket.Listener;
 
 namespace Selene.Protocol.Websocket
 {
-    public class WebsocketMessageProtocol : IMessageProtocol
+    internal class WebsocketMessageProtocol : IMessageProtocol
     {
         private readonly IWebsocketListener _websocketListener;
 

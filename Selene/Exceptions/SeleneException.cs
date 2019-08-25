@@ -6,14 +6,12 @@ namespace Selene.Exceptions
 {
     public class SeleneException : Exception
     {
-        public int ReasonCode { get; }
-
         public SeleneException(int reasonCode, string message) : base(message)
         {
             ReasonCode = reasonCode;
         }
 
-        public SeleneException(Reason reasonCode, string message) : this((int)reasonCode, message)
+        public SeleneException(Reason reasonCode, string message) : this((int) reasonCode, message)
         {
         }
 
@@ -22,13 +20,15 @@ namespace Selene.Exceptions
             ReasonCode = reasonCode;
         }
 
+        public int ReasonCode { get; }
+
         public string SerializeJson()
         {
             return JsonSerializer.ToString(new
             {
                 ReasonCode,
                 Message
-            }, new JsonSerializerOptions()
+            }, new JsonSerializerOptions
             {
                 IgnoreNullValues = true
             });
