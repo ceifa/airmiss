@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Selene.Internal;
 using Selene.Internal.Providers;
 using Selene.Messaging;
 
@@ -13,25 +14,33 @@ namespace Selene.Processor
     {
         private readonly IMessageProcessorDescriptorProvider _messageProcessorDescriptorProvider;
         private readonly INodeConnectionManager _nodeConnectionManager;
+        private readonly ISubscriptionManager _subscriptionManager;
+        private readonly IMessageProtocol[] _messageProtocols;
         private readonly ITypeActivatorCache _typeActivatorCache;
 
         internal MessageProcessor(IMessageProcessorDescriptorProvider messageProcessorDescriptorProvider,
-            ITypeActivatorCache typeActivatorCache, INodeConnectionManager nodeConnectionManager)
+            ITypeActivatorCache typeActivatorCache, INodeConnectionManager nodeConnectionManager, ISubscriptionManager subscriptionManager, IMessageProtocol[] messageProtocols)
         {
             _messageProcessorDescriptorProvider = messageProcessorDescriptorProvider ??
-                                                  throw new ArgumentNullException(
-                                                      nameof(messageProcessorDescriptorProvider));
+                                                  throw new ArgumentNullException(nameof(messageProcessorDescriptorProvider));
             _typeActivatorCache = typeActivatorCache ?? throw new ArgumentNullException(nameof(typeActivatorCache));
-            _nodeConnectionManager =
-                nodeConnectionManager ?? throw new ArgumentNullException(nameof(nodeConnectionManager));
+            _nodeConnectionManager = nodeConnectionManager ?? throw new ArgumentNullException(nameof(nodeConnectionManager));
+            _subscriptionManager = subscriptionManager ?? throw new ArgumentNullException(nameof(subscriptionManager));
+            _messageProtocols = messageProtocols ?? throw new ArgumentNullException(nameof(messageProtocols));
         }
 
-        public async Task<T> ProcessAsync<T>(string connectionId, Message message,
+        public Task<T> ProcessAsync<T>(string connectionId, Message message,
             CancellationToken cancellationToken)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
 
+            return ProcessInternalAsync<T>(connectionId, message, cancellationToken);
+        }
+
+        private async Task<T> ProcessInternalAsync<T>(string connectionId, Message message,
+            CancellationToken cancellationToken)
+        {
             var descriptor = _messageProcessorDescriptorProvider.GetDescriptor(new Route(message.Route), message.Verb);
             var hubInstance = _typeActivatorCache.GetInstance(descriptor.MessageProcessorDescriptor.HubType);
             var connectionContext = _nodeConnectionManager.GetConnectionContext(connectionId);
@@ -39,12 +48,17 @@ namespace Selene.Processor
             try
             {
                 if (hubInstance is MessageProcessorHub messageProcessorHub)
+                {
                     messageProcessorHub.Context = connectionContext;
+                    messageProcessorHub.SubscriptionManager = _subscriptionManager;
+                    messageProcessorHub.MessageProtocols = _messageProtocols;
+                }
 
                 var messageProcessorMethod = descriptor.MessageProcessorDescriptor.MessageProcessor;
                 var parameters = GetParameters(messageProcessorMethod.GetParameters(), descriptor.Variables,
                     message.Content,
                     cancellationToken);
+
                 var messageProcessorResult = messageProcessorMethod.Invoke(hubInstance, parameters.ToArray());
 
                 switch (messageProcessorResult)

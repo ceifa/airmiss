@@ -38,8 +38,9 @@ namespace Selene.Configuration
             var descriptorProvider = new MessageProcessorDescriptorProvider(_messageProcessorDescriptors);
             var typeActivator = new TypeActivatorCache(_serviceProvider);
             var nodeConnectionManager = new NodeConnectionManager();
+            var subscriptionManager = new SubscriptionManager();
 
-            var messageProcessor = new MessageProcessor(descriptorProvider, typeActivator, nodeConnectionManager);
+            var messageProcessor = new MessageProcessor(descriptorProvider, typeActivator, nodeConnectionManager, subscriptionManager, _messageProtocols.ToArray());
 
             return new SeleneRunner(messageProcessor, _messageProtocols.ToArray());
         }

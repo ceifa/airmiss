@@ -26,5 +26,10 @@ namespace Selene.Protocol.Websocket
             _websocketListener.Dispose();
             return Task.CompletedTask;
         }
+
+        public Task SendAsync<T>(string connectionId, T message, CancellationToken cancellationToken)
+        {
+            return _websocketListener.Send(connectionId, message);
+        }
     }
 }

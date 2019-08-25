@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading;
+using System.Threading.Tasks;
 using Fleck;
 using Selene.Exceptions;
 using Selene.Messaging;
@@ -50,6 +52,12 @@ namespace Selene.Protocol.Websocket.Listener
                     }
                 };
             });
+        }
+
+        public Task Send(string connectionId, object message)
+        {
+            var connection = _openConnections.SingleOrDefault(c => c.Id.Equals(connectionId));
+            return connection?.WebSocketConnection.Send(JsonSerializer.ToString(message));
         }
 
         public void Dispose()

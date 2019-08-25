@@ -1,5 +1,7 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Selene.Internal;
 
 namespace Selene.Messaging
 {
@@ -17,26 +19,25 @@ namespace Selene.Messaging
             }
         }
 
-        protected async Task SubscribeAsync(string key)
+        internal ISubscriptionManager SubscriptionManager { private get; set; }
+
+        internal IMessageProtocol[] MessageProtocols { private get; set; }
+
+        protected void Subscribe(string key)
         {
+            SubscriptionManager.Subscribe(key, Context.ConnectionId);
         }
 
-        protected async Task UnsubscribeAsync(string key)
+        protected void UnsubscribeAsync(string key)
         {
+            SubscriptionManager.Unsubscribe(key, Context.ConnectionId);
         }
 
-        protected async Task SendToSubscribersAsync(string key, object content)
+        protected Task SendToSubscribersAsync<T>(string key, T content, CancellationToken cancellationToken)
         {
-        }
-
-        protected virtual Task BeforeCalledAsync()
-        {
-            return Task.CompletedTask;
-        }
-
-        protected virtual Task AfterCalledAsync()
-        {
-            return Task.CompletedTask;
+            var subscribers = SubscriptionManager.GetSubscribers(key);
+            return Task.WhenAll(subscribers.SelectMany(s =>
+                MessageProtocols.Select(m => m.SendAsync(s, content, cancellationToken))));
         }
     }
 }

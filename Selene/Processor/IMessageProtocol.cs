@@ -9,5 +9,7 @@ namespace Selene.Messaging
         Task StartAsync(IMessageProcessor messageProcessor, CancellationToken cancellationToken);
 
         Task StopAsync(CancellationToken cancellationToken);
+
+        Task SendAsync<T>(string connectionId, T message, CancellationToken cancellationToken);
     }
 }
