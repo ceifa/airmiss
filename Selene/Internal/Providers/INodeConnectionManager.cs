@@ -1,6 +1,6 @@
 ﻿using Selene.Messaging;
 
-namespace Selene.Providers
+namespace Selene.Internal.Providers
 {
     internal interface INodeConnectionManager
     {

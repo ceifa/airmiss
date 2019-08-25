@@ -1,6 +1,6 @@
-﻿using Selene.Processor;
-using System;
+﻿using System;
 using System.Threading;
+using Selene.Processor;
 
 namespace Selene.Protocol.Websocket.Listener
 {

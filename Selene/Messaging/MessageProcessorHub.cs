@@ -5,17 +5,15 @@ namespace Selene.Messaging
 {
     public class MessageProcessorHub
     {
-        private static AsyncLocal<ConnectionContext> _currentConnectionContext = new AsyncLocal<ConnectionContext>();
+        private static readonly AsyncLocal<ConnectionContext> _currentConnectionContext =
+            new AsyncLocal<ConnectionContext>();
 
         internal ConnectionContext Context
         {
             get => _currentConnectionContext?.Value;
             set
             {
-                if (value != null)
-                {
-                    _currentConnectionContext.Value = value;
-                }
+                if (value != null) _currentConnectionContext.Value = value;
             }
         }
 

@@ -1,11 +1,9 @@
-﻿using Selene.Internal;
-using Selene.Internal.Extensions;
-using Selene.Messaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
+using Selene.Internal;
+using Selene.Messaging;
 
 namespace Selene.Configuration
 {
@@ -31,7 +29,7 @@ namespace Selene.Configuration
             if (hubType == null)
                 throw new ArgumentNullException(nameof(hubType));
 
-            return AddHub(new[] { hubType });
+            return AddHub(new[] {hubType});
         }
 
         public SeleneConfiguration AddHub(params Type[] hubTypes)
@@ -52,10 +50,10 @@ namespace Selene.Configuration
 
                     foreach (var hubMethodAttribute in hubMethodAttributes)
                     {
-                        var hubMethodRoute = hubMethodAttribute.AsRoute();
+                        var hubMethodRoute = hubMethodAttribute.GetRoute();
 
                         var routes = hubTypeAttributes
-                            .Select(attribute => attribute.AsRoute() + hubMethodRoute);
+                            .Select(attribute => attribute.GetRoute() + hubMethodRoute);
 
                         Add(hubType, routes, hubMethodAttribute.Verb, hubMethod);
                     }
@@ -81,7 +79,8 @@ namespace Selene.Configuration
             if (messageProcessor == null)
                 throw new ArgumentNullException(nameof(messageProcessor));
 
-            var descriptor = new MessageProcessorDescriptor(hubType, routes.Select(r => r.EnsureIsValid()), verb, messageProcessor);
+            var descriptor = new MessageProcessorDescriptor(hubType, routes.Select(r => r.EnsureIsValid()), verb,
+                messageProcessor);
 
             _addMessageProcessor(descriptor);
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace Selene.Providers
+namespace Selene.Internal.Providers
 {
     internal class TypeActivatorCache : ITypeActivatorCache
     {

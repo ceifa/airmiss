@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Selene.Internal.Exceptions
+namespace Selene.Exceptions
 {
-    internal class ProcessorNotFoundException : Exception
+    public class ProcessorNotFoundException : Exception
     {
         internal ProcessorNotFoundException()
         {

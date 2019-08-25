@@ -1,12 +1,11 @@
-﻿using Selene.Internal.Exceptions;
-using Selene.Messaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Selene.Exceptions;
+using Selene.Messaging;
 
-namespace Selene.Providers
+namespace Selene.Internal.Providers
 {
     internal class MessageProcessorDescriptorProvider : IMessageProcessorDescriptorProvider
     {
@@ -20,45 +19,16 @@ namespace Selene.Providers
                                            throw new ArgumentNullException(nameof(messageProcessorDescriptors));
         }
 
-        public MessageProcessorContext GetDescriptor(string route, Verb verb)
+        public MessageProcessorContext GetDescriptor(Route route, Verb verb)
         {
-            var paths = route.Trim(Path.DirectorySeparatorChar).Trim(Path.AltDirectorySeparatorChar).Split('/');
-            var matches = (from messageProcessorDescriptor in _messageProcessorDescriptors
-                           where messageProcessorDescriptor.Verb.Equals(verb)
-                           let variablePaths = new Dictionary<string, string>()
-                           from messageProcessorPath in messageProcessorDescriptor.Routes
-                           let match = paths.All(path =>
-                           {
-                               var variableName = GetRouteVariableName(path);
+            var match = _messageProcessorDescriptors.Where(m => m.Verb == verb)
+                .SelectMany(m => m.Routes.Select(r => new {Route = r, Descriptor = m}))
+                .FirstOrDefault(m => Route.Match(route, m.Route));
 
-                               if (variableName == null)
-                                   return path == messageProcessorPath.ToString();
+            if (match == default)
+                throw new ProcessorNotFoundException($"No processor was found with route '{route}' and verb '{verb}'");
 
-                               variablePaths.Add(variableName.ToLowerInvariant(), path);
-                               return true;
-                           })
-                           where match
-                           select new MessageProcessorContext(messageProcessorDescriptor, variablePaths)).ToArray();
-
-            matches = new[]
-            {
-                new MessageProcessorContext(_messageProcessorDescriptors[0], new Dictionary<string, string>())
-            };
-            return matches.Length switch
-            {
-                0 => throw new ProcessorNotFoundException($"Route '{route}' not found"),
-                1 => matches[0],
-                _ => throw new InvalidOperationException($"Route '{route}' matched more than one message processor"),
-            };
-        }
-
-        private static string GetRouteVariableName(string path)
-        {
-            var routeVariableMatch = RouteVariableRegex.Match(path);
-
-            if (!routeVariableMatch.Success || routeVariableMatch.Groups.Count != 1) return null;
-
-            return routeVariableMatch.Groups[1].Value;
+            return new MessageProcessorContext(match.Descriptor, match.Route.GetVariables(route));
         }
     }
 }

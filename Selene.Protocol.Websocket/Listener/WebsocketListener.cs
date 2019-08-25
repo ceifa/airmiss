@@ -1,10 +1,9 @@
-﻿using Fleck;
+﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
+using System.Threading;
+using Fleck;
 using Selene.Processor;
 using Selene.Protocol.Websocket.Extensions;
-using System;
-using System.Collections.Generic;
-using System.Text.Json;
-using System.Threading;
 
 namespace Selene.Protocol.Websocket.Listener
 {
@@ -30,12 +29,11 @@ namespace Selene.Protocol.Websocket.Listener
                 socket.OnMessage = async data =>
                 {
                     var message = data.GetMessage();
-                    var result = await messageProcessor.ProcessAsync<object>(webSocketClient.Id, message, cancellationToken);
+                    var result =
+                        await messageProcessor.ProcessAsync<object>(webSocketClient.Id, message, cancellationToken);
 
                     if (result != null)
-                    {
-                        await socket.Send(JsonSerializer.SerializeToUtf8Bytes(result));
-                    }
+                        await socket.Send(JsonSerializer.ToUtf8Bytes(result));
                 };
             });
         }

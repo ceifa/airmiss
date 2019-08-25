@@ -1,5 +1,5 @@
-﻿using Selene.Messaging;
-using System;
+﻿using System;
+using Selene.Messaging;
 
 namespace Selene.Configuration
 {

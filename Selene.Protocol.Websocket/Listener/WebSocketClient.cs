@@ -1,18 +1,18 @@
-﻿using Fleck;
-using System;
+﻿using System;
+using Fleck;
 
 namespace Selene.Protocol.Websocket.Listener
 {
     internal class WebSocketClient
     {
-        internal string Id { get; }
-
-        internal IWebSocketConnection WebSocketConnection { get; }
-
         internal WebSocketClient(IWebSocketConnection webSocketConnection)
         {
             Id = Guid.NewGuid().ToString();
             WebSocketConnection = webSocketConnection ?? throw new ArgumentNullException(nameof(webSocketConnection));
         }
+
+        internal string Id { get; }
+
+        internal IWebSocketConnection WebSocketConnection { get; }
     }
 }

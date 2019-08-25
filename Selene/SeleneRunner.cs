@@ -1,8 +1,8 @@
-﻿using Selene.Messaging;
-using Selene.Processor;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Selene.Messaging;
+using Selene.Processor;
 
 namespace Selene
 {

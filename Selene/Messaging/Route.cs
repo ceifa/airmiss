@@ -1,21 +1,23 @@
-﻿using Selene.Internal.Exceptions;
-using Selene.Internal.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Selene.Exceptions;
+using Selene.Internal.Extensions;
 
 namespace Selene.Messaging
 {
     public struct Route
     {
         private const char RouteSeparator = '/';
-        private static readonly Regex RouteRepetitionsRegex = new Regex($"{Regex.Escape(RouteSeparator.ToString())}+", RegexOptions.Compiled);
 
-        private string[] RouteTokens => _routeTokens.Value;
+        private static readonly Regex RouteRepetitionsRegex =
+            new Regex($"{Regex.Escape(RouteSeparator.ToString())}+", RegexOptions.Compiled);
+
+        private RouteToken[] RouteTokens => _routeTokensLazy.Value;
 
         private readonly string _route;
-        private readonly Lazy<string[]> _routeTokens;
+        private readonly Lazy<RouteToken[]> _routeTokensLazy;
 
         public Route(Uri route) : this(route.AbsoluteUri)
         {
@@ -24,7 +26,7 @@ namespace Selene.Messaging
         public Route(string route)
         {
             _route = route;
-            _routeTokens = new Lazy<string[]>(() => GetRouteTokens(SanitizeRoute(route)));
+            _routeTokensLazy = new Lazy<RouteToken[]>(() => GetRouteTokens(SanitizeRoute(route)));
         }
 
         public Route EnsureIsValid()
@@ -32,7 +34,7 @@ namespace Selene.Messaging
             if (string.IsNullOrWhiteSpace(_route))
                 throw new InvalidRouteException("Route cannot be empty");
 
-            if (RouteTokens.Length == 0)
+            if (RouteTokens?.Length == 0)
                 throw new InvalidRouteException(_route);
 
             return this;
@@ -43,9 +45,33 @@ namespace Selene.Messaging
             return new Route($"{this}{RouteSeparator}{target}");
         }
 
-        public static Route operator +(Route left, Route right) => left.Combine(right);
+        public Dictionary<string, string> GetVariables(Route target)
+        {
+            if (Match(this, target))
+                throw new InvalidOperationException("Tried to get variables from unmatched routes");
 
-        public override string ToString() => _route;
+            return RouteTokens.Zip(target.RouteTokens,
+                    (r1, r2) => new KeyValuePair<string, string>(r1.VariableName, r2.ToString()))
+                .ToDictionary(t => t.Key, t => t.Value);
+        }
+
+        public static bool Match(Route route1, Route route2)
+        {
+            if (route1.EnsureIsValid().RouteTokens.Length != route2.EnsureIsValid().RouteTokens.Length)
+                return false;
+
+            return !route1.RouteTokens.Where((t, i) => t.VariableName == null && t != route2.RouteTokens[i]).Any();
+        }
+
+        public static Route operator +(Route route1, Route route2)
+        {
+            return route1.Combine(route2);
+        }
+
+        public override string ToString()
+        {
+            return _route;
+        }
 
         private static string SanitizeRoute(string route)
         {
@@ -56,9 +82,10 @@ namespace Selene.Messaging
                 .Normalize(), RouteSeparator.ToString());
         }
 
-        private static string[] GetRouteTokens(string route)
+        private static RouteToken[] GetRouteTokens(string route)
         {
-            return route.Split(RouteSeparator, StringSplitOptions.RemoveEmptyEntries);
+            return route.Split(RouteSeparator, StringSplitOptions.RemoveEmptyEntries).Select(t => new RouteToken(t))
+                .ToArray();
         }
     }
 }

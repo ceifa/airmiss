@@ -1,9 +1,9 @@
 ﻿using Selene.Messaging;
 
-namespace Selene.Providers
+namespace Selene.Internal.Providers
 {
     internal interface IMessageProcessorDescriptorProvider
     {
-        MessageProcessorContext GetDescriptor(string route, Verb verb);
+        MessageProcessorContext GetDescriptor(Route route, Verb verb);
     }
 }

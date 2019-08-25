@@ -1,6 +1,6 @@
-﻿using Selene.Processor;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Selene.Processor;
 
 namespace Selene.Messaging
 {

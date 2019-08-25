@@ -1,19 +1,19 @@
-﻿using Selene.Messaging;
-using Selene.Providers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Selene.Internal.Providers;
+using Selene.Messaging;
 
 namespace Selene.Processor
 {
     public class MessageProcessor : IMessageProcessor
     {
         private readonly IMessageProcessorDescriptorProvider _messageProcessorDescriptorProvider;
-        private readonly ITypeActivatorCache _typeActivatorCache;
         private readonly INodeConnectionManager _nodeConnectionManager;
+        private readonly ITypeActivatorCache _typeActivatorCache;
 
         internal MessageProcessor(IMessageProcessorDescriptorProvider messageProcessorDescriptorProvider,
             ITypeActivatorCache typeActivatorCache, INodeConnectionManager nodeConnectionManager)
@@ -22,25 +22,28 @@ namespace Selene.Processor
                                                   throw new ArgumentNullException(
                                                       nameof(messageProcessorDescriptorProvider));
             _typeActivatorCache = typeActivatorCache ?? throw new ArgumentNullException(nameof(typeActivatorCache));
-            _nodeConnectionManager = nodeConnectionManager ?? throw new ArgumentNullException(nameof(nodeConnectionManager));
+            _nodeConnectionManager =
+                nodeConnectionManager ?? throw new ArgumentNullException(nameof(nodeConnectionManager));
         }
 
         public async Task<T> ProcessAsync<T>(string connectionId, Message message,
             CancellationToken cancellationToken)
         {
-            var descriptor = _messageProcessorDescriptorProvider.GetDescriptor(message.Route, message.Verb);
+            if (message == null)
+                throw new ArgumentNullException(nameof(message));
+
+            var descriptor = _messageProcessorDescriptorProvider.GetDescriptor(new Route(message.Route), message.Verb);
             var hubInstance = _typeActivatorCache.GetInstance(descriptor.MessageProcessorDescriptor.HubType);
             var connectionContext = _nodeConnectionManager.GetConnectionContext(connectionId);
 
             try
             {
                 if (hubInstance is MessageProcessorHub messageProcessorHub)
-                {
                     messageProcessorHub.Context = connectionContext;
-                }
 
                 var messageProcessorMethod = descriptor.MessageProcessorDescriptor.MessageProcessor;
-                var parameters = GetParameters(messageProcessorMethod.GetParameters(), descriptor.Variables, message.Content,
+                var parameters = GetParameters(messageProcessorMethod.GetParameters(), descriptor.Variables,
+                    message.Content,
                     cancellationToken);
                 var messageProcessorResult = messageProcessorMethod.Invoke(hubInstance, parameters.ToArray());
 
@@ -54,7 +57,8 @@ namespace Selene.Processor
                     case T resultObject:
                         return resultObject;
                     default:
-                        throw new InvalidCastException($"Value returned from message processor is not of type {typeof(T).Name}");
+                        throw new InvalidCastException(
+                            $"Value returned from message processor is not of type {typeof(T).Name}");
                 }
             }
             finally

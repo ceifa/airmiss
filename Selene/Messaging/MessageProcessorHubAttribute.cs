@@ -1,5 +1,4 @@
-﻿using Selene.Internal;
-using System;
+﻿using System;
 
 namespace Selene.Messaging
 {
@@ -10,13 +9,16 @@ namespace Selene.Messaging
         {
         }
 
-        public MessageProcessorHubAttribute(string pathPrefix)
+        public MessageProcessorHubAttribute(string routePrefix)
         {
-            PathPrefix = pathPrefix;
+            RoutePrefix = routePrefix;
         }
 
-        public string PathPrefix { get; set; }
+        public string RoutePrefix { get; set; }
 
-        internal Route AsRoute() => new Route(PathPrefix);
+        internal Route GetRoute()
+        {
+            return new Route(RoutePrefix);
+        }
     }
 }

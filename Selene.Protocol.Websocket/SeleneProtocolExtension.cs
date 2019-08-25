@@ -1,6 +1,6 @@
-﻿using Selene.Configuration;
+﻿using System;
+using Selene.Configuration;
 using Selene.Protocol.Websocket.Listener;
-using System;
 
 namespace Selene.Protocol.Websocket
 {

@@ -1,8 +1,9 @@
-﻿using Selene.Messaging;
-using Selene.Processor;
-using Selene.Providers;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Selene.Internal;
+using Selene.Internal.Providers;
+using Selene.Messaging;
+using Selene.Processor;
 
 namespace Selene.Configuration
 {

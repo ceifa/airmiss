@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Selene.Providers
+namespace Selene.Internal.Providers
 {
     internal interface ITypeActivatorCache
     {

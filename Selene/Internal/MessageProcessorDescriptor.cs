@@ -1,11 +1,10 @@
-﻿using Selene.Internal;
-using Selene.Messaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Selene.Messaging;
 
-namespace Selene
+namespace Selene.Internal
 {
     internal class MessageProcessorDescriptor
     {

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Text.Json.Serialization;
 
 namespace Selene.Messaging
@@ -8,13 +6,10 @@ namespace Selene.Messaging
     [Serializable]
     public class Message
     {
-        [JsonPropertyName("route")]
-        public string Route { get; set; }
+        [JsonPropertyName("route")] public string Route { get; set; }
 
-        [JsonPropertyName("verb")]
-        public Verb Verb { get; set; }
+        [JsonPropertyName("verb")] public Verb Verb { get; set; }
 
-        [JsonPropertyName("content")]
-        public object Content { get; set; }
+        [JsonPropertyName("content")] public object Content { get; set; }
     }
 }

@@ -1,23 +1,25 @@
-﻿using Selene.Internal;
-using System;
+﻿using System;
 
 namespace Selene.Messaging
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     public class MessageProcessorAttribute : Attribute
     {
-        public MessageProcessorAttribute(string path, Verb verb)
+        public MessageProcessorAttribute(string route, Verb verb)
         {
-            Path = !string.IsNullOrWhiteSpace(path)
-                ? path
-                : throw new ArgumentException("Message processor path cannot be empty");
+            Route = !string.IsNullOrWhiteSpace(route)
+                ? route
+                : throw new ArgumentException($"Message processor {nameof(route)} cannot be empty");
             Verb = verb;
         }
 
-        internal string Path { get; set; }
+        internal string Route { get; set; }
 
         internal Verb Verb { get; set; }
 
-        internal Route AsRoute() => new Route(Path);
+        internal Route GetRoute()
+        {
+            return new Route(Route);
+        }
     }
 }

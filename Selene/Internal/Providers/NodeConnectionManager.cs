@@ -1,8 +1,8 @@
-﻿using Selene.Messaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Selene.Messaging;
 
-namespace Selene.Providers
+namespace Selene.Internal.Providers
 {
     internal class NodeConnectionManager : INodeConnectionManager
     {
@@ -18,7 +18,9 @@ namespace Selene.Providers
             if (string.IsNullOrWhiteSpace(connectionId))
                 throw new ArgumentException("Connection id cannot be null or white space", nameof(connectionId));
 
-            return _connectedNodes.TryGetValue(connectionId, out var connectionContext) ? connectionContext : new ConnectionContext(connectionId);
+            return _connectedNodes.TryGetValue(connectionId, out var connectionContext)
+                ? connectionContext
+                : new ConnectionContext(connectionId);
         }
 
         public void SetConnectionContext(ConnectionContext connectionContext)

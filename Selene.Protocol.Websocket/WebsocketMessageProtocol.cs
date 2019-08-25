@@ -1,11 +1,8 @@
-﻿using Selene.Messaging;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Selene.Messaging;
 using Selene.Processor;
 using Selene.Protocol.Websocket.Listener;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Selene.Protocol.Websocket
 {

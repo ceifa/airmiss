@@ -1,5 +1,5 @@
-﻿using Selene.Messaging;
-using System.Text.Json;
+﻿using System.Text.Json.Serialization;
+using Selene.Messaging;
 
 namespace Selene.Protocol.Websocket.Extensions
 {
@@ -7,7 +7,7 @@ namespace Selene.Protocol.Websocket.Extensions
     {
         internal static Message GetMessage(this string message)
         {
-            return JsonSerializer.Deserialize<Message>(message);
+            return JsonSerializer.Parse<Message>(message);
         }
     }
 }
