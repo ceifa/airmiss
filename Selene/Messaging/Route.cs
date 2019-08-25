@@ -47,11 +47,12 @@ namespace Selene.Messaging
 
         public Dictionary<string, string> GetVariables(Route target)
         {
-            if (Match(this, target))
+            if (!Match(this, target))
                 throw new InvalidOperationException("Tried to get variables from unmatched routes");
 
             return RouteTokens.Zip(target.RouteTokens,
                     (r1, r2) => new KeyValuePair<string, string>(r1.VariableName, r2.ToString()))
+                .Where(t => t.Key != null)
                 .ToDictionary(t => t.Key, t => t.Value);
         }
 
@@ -60,7 +61,7 @@ namespace Selene.Messaging
             if (route1.EnsureIsValid().RouteTokens.Length != route2.EnsureIsValid().RouteTokens.Length)
                 return false;
 
-            return !route1.RouteTokens.Where((t, i) => t.VariableName == null && t != route2.RouteTokens[i]).Any();
+            return route1.RouteTokens.Where((t, i) => t.VariableName == null && t != route2.RouteTokens[i]).Any();
         }
 
         public static Route operator +(Route route1, Route route2)

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Threading;
 using Fleck;
+using Selene.Exceptions;
+using Selene.Messaging;
 using Selene.Processor;
 using Selene.Protocol.Websocket.Extensions;
 
@@ -28,12 +31,23 @@ namespace Selene.Protocol.Websocket.Listener
                 socket.OnClose = () => _openConnections.Remove(webSocketClient);
                 socket.OnMessage = async data =>
                 {
-                    var message = data.GetMessage();
-                    var result =
-                        await messageProcessor.ProcessAsync<object>(webSocketClient.Id, message, cancellationToken);
+                    try
+                    {
+                        var message = data.GetMessage();
+                        var result =
+                            await messageProcessor.ProcessAsync<object>(webSocketClient.Id, message, cancellationToken);
 
-                    if (result != null)
-                        await socket.Send(JsonSerializer.ToUtf8Bytes(result));
+                        if (result != null)
+                            await socket.Send(JsonSerializer.ToString(result));
+                    }
+                    catch (SeleneException ex)
+                    {
+                        await socket.Send(ex.SerializeJson());
+                    }
+                    catch (Exception ex)
+                    {
+                        await socket.Send(new SeleneException(Reason.GENERIC_ERROR, ex.Message).SerializeJson());
+                    }
                 };
             });
         }

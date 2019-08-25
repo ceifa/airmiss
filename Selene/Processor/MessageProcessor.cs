@@ -73,14 +73,19 @@ namespace Selene.Processor
         {
             return expectedParameters.Select(e =>
             {
+                var type = e.ParameterType;
+
                 var pathParameterName = e.GetCustomAttribute<PathAttribute>()?.Name ?? e.Name;
-                if (routeParameters.TryGetValue(pathParameterName.ToLowerInvariant(), out var value)) return value;
+                if (routeParameters.TryGetValue(pathParameterName.ToLowerInvariant(), out var value))
+                    return Convert.ChangeType(value, type);
 
-                if (e.ParameterType.IsAssignableFrom(typeof(CancellationToken))) return cancellationToken;
+                if (type.IsAssignableFrom(typeof(CancellationToken)))
+                    return cancellationToken;
 
-                if (e.GetCustomAttribute<ContentAttribute>() != null || e.Name == nameof(content)) return content;
+                if (e.GetCustomAttribute<ContentAttribute>() != null || e.Name == nameof(content))
+                    return Convert.ChangeType(content, type);
 
-                return default;
+                return type.IsValueType ? Activator.CreateInstance(type) : default;
             });
         }
     }
