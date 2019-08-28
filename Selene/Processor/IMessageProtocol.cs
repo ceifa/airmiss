@@ -10,6 +10,8 @@ namespace Selene.Messaging
 
         Task StopAsync(CancellationToken cancellationToken);
 
+        bool ContainsUser(string connectionId);
+
         Task SendAsync<T>(string connectionId, T message, CancellationToken cancellationToken);
     }
 }

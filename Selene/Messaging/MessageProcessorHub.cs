@@ -28,7 +28,7 @@ namespace Selene.Messaging
             SubscriptionManager.Subscribe(key, Context.ConnectionId);
         }
 
-        protected void UnsubscribeAsync(string key)
+        protected void Unsubscribe(string key)
         {
             SubscriptionManager.Unsubscribe(key, Context.ConnectionId);
         }
