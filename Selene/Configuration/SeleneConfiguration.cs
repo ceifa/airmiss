@@ -35,14 +35,16 @@ namespace Selene.Configuration
 
         public SeleneRunner GetRunner()
         {
-            var descriptorProvider = new MessageProcessorDescriptorProvider(_messageProcessorDescriptors);
+            var aggregateMessageProtocol = new AggregateMessageProtocol(_messageProtocols);
+
+            var descriptorProvider = new MessageProcessorProvider(_messageProcessorDescriptors);
             var typeActivator = new TypeActivatorCache(_serviceProvider);
-            var nodeConnectionManager = new NodeConnectionManager();
+            var receiverContextManager = new ReceiverContextManager();
             var subscriptionManager = new SubscriptionManager();
 
-            var messageProcessor = new MessageProcessor(descriptorProvider, typeActivator, nodeConnectionManager, subscriptionManager, _messageProtocols.ToArray());
+            var messageProcessor = new MessageProcessor(descriptorProvider, typeActivator, receiverContextManager, subscriptionManager, aggregateMessageProtocol);
 
-            return new SeleneRunner(messageProcessor, _messageProtocols.ToArray());
+            return new SeleneRunner(messageProcessor, aggregateMessageProtocol);
         }
     }
 }

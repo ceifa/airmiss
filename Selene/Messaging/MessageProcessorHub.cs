@@ -1,43 +1,35 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Selene.Internal;
 
 namespace Selene.Messaging
 {
-    public class MessageProcessorHub
+    public abstract class MessageProcessorHub
     {
-        private static readonly AsyncLocal<ConnectionContext> CurrentConnectionContext =
-            new AsyncLocal<ConnectionContext>();
+        private static readonly AsyncLocal<ReceiverContext> CurrentReceiverContext =
+            new AsyncLocal<ReceiverContext>();
 
-        internal ConnectionContext Context
+        internal ReceiverContext Context
         {
-            get => CurrentConnectionContext?.Value;
-            set
-            {
-                if (value != null) CurrentConnectionContext.Value = value;
-            }
+            get => CurrentReceiverContext.Value;
+            set => CurrentReceiverContext.Value = value;
         }
 
         internal ISubscriptionManager SubscriptionManager { private get; set; }
 
-        internal IMessageProtocol[] MessageProtocols { private get; set; }
-
-        protected void Subscribe(string key)
+        protected void LinkReceiver(string receiverIdentity)
         {
-            SubscriptionManager.Subscribe(key, Context.ConnectionId);
+            SubscriptionManager.Subscribe(receiverIdentity, Context.MessageReceiver.Identity);
         }
 
-        protected void Unsubscribe(string key)
+        protected void UnlinkReceiver(string receiverIdentity)
         {
-            SubscriptionManager.Unsubscribe(key, Context.ConnectionId);
+            SubscriptionManager.Unsubscribe(receiverIdentity, Context.MessageReceiver.Identity);
         }
 
-        protected Task SendToSubscribersAsync<T>(string key, T content, CancellationToken cancellationToken)
+        protected async Task SendToReceiverAsync(object message, string receiverIdentity = null, CancellationToken cancellationToken = default)
         {
-            var subscribers = SubscriptionManager.GetSubscribers(key);
-            return Task.WhenAll(subscribers.SelectMany(s =>
-                MessageProtocols.Select(m => m.SendAsync(s, content, cancellationToken))));
+            receiverIdentity ??= Context.MessageReceiver.Identity;
         }
     }
 }

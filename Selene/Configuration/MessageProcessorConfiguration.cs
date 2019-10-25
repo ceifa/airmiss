@@ -12,7 +12,8 @@ namespace Selene.Configuration
         private readonly Action<MessageProcessorDescriptor> _addMessageProcessor;
         private readonly SeleneConfiguration _seleneConfiguration;
 
-        internal MessageProcessorConfiguration(SeleneConfiguration seleneConfiguration,
+        internal MessageProcessorConfiguration(
+            SeleneConfiguration seleneConfiguration,
             Action<MessageProcessorDescriptor> addMessageProcessor)
         {
             _seleneConfiguration = seleneConfiguration ?? throw new ArgumentNullException(nameof(seleneConfiguration));
@@ -24,14 +25,6 @@ namespace Selene.Configuration
             return AddHub(typeof(THub));
         }
 
-        public SeleneConfiguration AddHub(Type hubType)
-        {
-            if (hubType == null)
-                throw new ArgumentNullException(nameof(hubType));
-
-            return AddHub(new[] {hubType});
-        }
-
         public SeleneConfiguration AddHub(params Type[] hubTypes)
         {
             if (hubTypes == null)
@@ -39,24 +32,31 @@ namespace Selene.Configuration
 
             foreach (var hubType in hubTypes)
             {
-                if (hubType == null)
-                    throw new ArgumentException($"A {nameof(hubType)} cannot be null");
+                AddHub(hubType);
+            }
 
-                var hubTypeAttributes = hubType.GetCustomAttributes<MessageProcessorHubAttribute>().ToArray();
+            return _seleneConfiguration;
+        }
 
-                foreach (var hubMethod in hubType.GetMethods())
+        public SeleneConfiguration AddHub(Type hubType)
+        {
+            if (hubType == null)
+                throw new ArgumentNullException(nameof(hubType));
+
+            var hubTypeAttributes = hubType.GetCustomAttributes<MessageProcessorHubAttribute>().ToArray();
+
+            foreach (var hubMethod in hubType.GetMethods())
+            {
+                var hubMethodAttributes = hubMethod.GetCustomAttributes<MessageProcessorAttribute>();
+
+                foreach (var hubMethodAttribute in hubMethodAttributes)
                 {
-                    var hubMethodAttributes = hubMethod.GetCustomAttributes<MessageProcessorAttribute>();
+                    var hubMethodRoute = hubMethodAttribute.GetRoute();
 
-                    foreach (var hubMethodAttribute in hubMethodAttributes)
-                    {
-                        var hubMethodRoute = hubMethodAttribute.GetRoute();
+                    var routes = hubTypeAttributes
+                        .Select(attribute => attribute.GetRoute() + hubMethodRoute);
 
-                        var routes = hubTypeAttributes
-                            .Select(attribute => attribute.GetRoute() + hubMethodRoute);
-
-                        Add(hubType, routes, hubMethodAttribute.Verb, hubMethod);
-                    }
+                    Add(hubType, routes, hubMethodAttribute.Verb, hubMethod);
                 }
             }
 

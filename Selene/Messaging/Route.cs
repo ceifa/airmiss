@@ -51,9 +51,9 @@ namespace Selene.Messaging
                 throw new InvalidOperationException("Tried to get variables from unmatched routes");
 
             return RouteTokens.Zip(target.RouteTokens,
-                    (r1, r2) => new KeyValuePair<string, string>(r1.VariableName, r2.ToString()))
-                .Where(t => t.Key != null)
-                .ToDictionary(t => t.Key, t => t.Value);
+                    (r1, r2) => (Name: r1.VariableName, Value: r2.ToString()))
+                .Where(t => t.Name != null)
+                .ToDictionary(t => t.Name, t => t.Value);
         }
 
         public static bool Match(Route route1, Route route2)
@@ -85,8 +85,8 @@ namespace Selene.Messaging
 
         private static RouteToken[] GetRouteTokens(string route)
         {
-            return route.Split(RouteSeparator, StringSplitOptions.RemoveEmptyEntries).Select(t => new RouteToken(t))
-                .ToArray();
+            return route.Split(RouteSeparator, StringSplitOptions.RemoveEmptyEntries)
+                .Select(t => new RouteToken(t)).ToArray();
         }
     }
 }

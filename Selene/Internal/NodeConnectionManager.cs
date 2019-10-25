@@ -4,36 +4,36 @@ using Selene.Messaging;
 
 namespace Selene.Internal.Providers
 {
-    internal class NodeConnectionManager : INodeConnectionManager
+    internal class ReceiverContextManager : IReceiverContextManager
     {
-        private readonly IDictionary<string, ConnectionContext> _connectedNodes;
+        private readonly IDictionary<string, ReceiverContext> _connectedReceivers;
 
-        public NodeConnectionManager()
+        public ReceiverContextManager()
         {
-            _connectedNodes = new Dictionary<string, ConnectionContext>();
+            _connectedReceivers = new Dictionary<string, ReceiverContext>();
         }
 
-        public ConnectionContext GetConnectionContext(string connectionId)
+        public ReceiverContext GetContext(MessageReceiver receiver)
         {
-            if (string.IsNullOrWhiteSpace(connectionId))
-                throw new ArgumentException("Connection id cannot be null or white space", nameof(connectionId));
+            if (string.IsNullOrWhiteSpace(receiver.Identity))
+                throw new ArgumentException("Receiver identity cannot be null or white space", nameof(receiver));
 
-            return _connectedNodes.TryGetValue(connectionId, out var connectionContext)
+            return _connectedReceivers.TryGetValue(receiver.Identity, out var connectionContext)
                 ? connectionContext
-                : new ConnectionContext(connectionId);
+                : new ReceiverContext(receiver);
         }
 
-        public void SetConnectionContext(ConnectionContext connectionContext)
+        public void SetContext(ReceiverContext receiverContext)
         {
-            if (string.IsNullOrWhiteSpace(connectionContext?.ConnectionId))
-                throw new ArgumentException("Connection id cannot be null or white space", nameof(connectionContext));
+            if (string.IsNullOrWhiteSpace(receiverContext?.MessageReceiver?.Identity))
+                throw new ArgumentException("Receiver or receiver identity cannot be null or white space", nameof(receiverContext));
 
-            _connectedNodes[connectionContext.ConnectionId] = connectionContext;
+            _connectedReceivers[receiverContext.MessageReceiver.Identity] = receiverContext;
         }
 
-        public void ReleaseConnection(string connectionId)
+        public void ReleaseContext(MessageReceiver receiver)
         {
-            _connectedNodes.Remove(connectionId);
+            _connectedReceivers.Remove(receiver.Identity);
         }
     }
 }

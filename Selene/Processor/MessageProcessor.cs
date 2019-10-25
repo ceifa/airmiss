@@ -12,77 +12,65 @@ namespace Selene.Processor
 {
     public class MessageProcessor : IMessageProcessor
     {
-        private readonly IMessageProcessorDescriptorProvider _messageProcessorDescriptorProvider;
-        private readonly INodeConnectionManager _nodeConnectionManager;
+        private readonly IMessageProcessorProvider _messageProcessorProvider;
+        private readonly IReceiverContextManager _receiverContextManager;
         private readonly ISubscriptionManager _subscriptionManager;
-        private readonly IMessageProtocol[] _messageProtocols;
         private readonly ITypeActivatorCache _typeActivatorCache;
 
-        internal MessageProcessor(IMessageProcessorDescriptorProvider messageProcessorDescriptorProvider,
-            ITypeActivatorCache typeActivatorCache, INodeConnectionManager nodeConnectionManager, ISubscriptionManager subscriptionManager, IMessageProtocol[] messageProtocols)
+        internal MessageProcessor(IMessageProcessorProvider messageProcessorProvider,
+            ITypeActivatorCache typeActivatorCache, IReceiverContextManager receiverContextManager, ISubscriptionManager subscriptionManager)
         {
-            _messageProcessorDescriptorProvider = messageProcessorDescriptorProvider ??
-                                                  throw new ArgumentNullException(nameof(messageProcessorDescriptorProvider));
+            _messageProcessorProvider = messageProcessorProvider ?? throw new ArgumentNullException(nameof(messageProcessorProvider));
             _typeActivatorCache = typeActivatorCache ?? throw new ArgumentNullException(nameof(typeActivatorCache));
-            _nodeConnectionManager = nodeConnectionManager ?? throw new ArgumentNullException(nameof(nodeConnectionManager));
+            _receiverContextManager = receiverContextManager ?? throw new ArgumentNullException(nameof(receiverContextManager));
             _subscriptionManager = subscriptionManager ?? throw new ArgumentNullException(nameof(subscriptionManager));
-            _messageProtocols = messageProtocols ?? throw new ArgumentNullException(nameof(messageProtocols));
         }
 
-        public Task<T> ProcessAsync<T>(string connectionId, Message message,
-            CancellationToken cancellationToken)
+        public async Task<T> ProcessAsync<T>(MessageReceiver receiver, Message message, CancellationToken cancellationToken)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
 
-            return ProcessInternalAsync<T>(connectionId, message, cancellationToken);
-        }
-
-        private async Task<T> ProcessInternalAsync<T>(string connectionId, Message message,
-            CancellationToken cancellationToken)
-        {
-            var descriptor = _messageProcessorDescriptorProvider.GetDescriptor(new Route(message.Route), message.Verb);
-            var hubInstance = _typeActivatorCache.GetInstance(descriptor.MessageProcessorDescriptor.HubType);
-            var connectionContext = _nodeConnectionManager.GetConnectionContext(connectionId);
+            var processor = _messageProcessorProvider.GetProcessor(message.Route, message.Verb);
+            var hubInstance = _typeActivatorCache.GetInstance(processor.MessageProcessorDescriptor.HubType);
+            var context = _receiverContextManager.GetContext(receiver);
 
             try
             {
-                if (hubInstance is MessageProcessorHub messageProcessorHub)
-                {
-                    messageProcessorHub.Context = connectionContext;
-                    messageProcessorHub.SubscriptionManager = _subscriptionManager;
-                    messageProcessorHub.MessageProtocols = _messageProtocols;
-                }
+                PopulateMessageProcessorVariables(hubInstance, context);
 
-                var messageProcessorMethod = descriptor.MessageProcessorDescriptor.MessageProcessor;
-                var parameters = GetParameters(messageProcessorMethod.GetParameters(), descriptor.Variables,
-                    message.Content,
-                    cancellationToken);
+                var messageProcessorMethod = processor.MessageProcessorDescriptor.MessageProcessor;
+                var parameters = GetProcessorParameters(messageProcessorMethod.GetParameters(), processor.Variables,
+                    message.Content, cancellationToken);
 
                 var messageProcessorResult = messageProcessorMethod.Invoke(hubInstance, parameters.ToArray());
 
-                switch (messageProcessorResult)
+                return messageProcessorResult switch
                 {
-                    case Task<T> genericTask:
-                        return await genericTask;
-                    case Task task:
-                        await task;
-                        return default;
-                    case T resultObject:
-                        return resultObject;
-                    default:
-                        throw new InvalidCastException(
-                            $"Value returned from message processor is not of type {typeof(T).Name}");
-                }
+                    Task<T> genericTask => await genericTask,
+                    Task task => await task.ContinueWith(_ => default(T)),
+                    T resultObject => resultObject,
+                    _ => throw new InvalidCastException(
+                        $"Value returned from message processor is not of type {typeof(T).Name}")
+                };
             }
             finally
             {
                 _typeActivatorCache.Release(hubInstance);
-                _nodeConnectionManager.SetConnectionContext(connectionContext);
+                _receiverContextManager.SetContext(context);
             }
         }
 
-        private IEnumerable<object> GetParameters(IEnumerable<ParameterInfo> expectedParameters,
+        private void PopulateMessageProcessorVariables(object instance, ReceiverContext context)
+        {
+            if (instance is MessageProcessorHub messageProcessorHub)
+            {
+                messageProcessorHub.Context = context;
+                messageProcessorHub.SubscriptionManager = _subscriptionManager;
+            }
+        }
+
+        private IEnumerable<object> GetProcessorParameters(IEnumerable<ParameterInfo> expectedParameters,
             IDictionary<string, string> routeParameters, object content, CancellationToken cancellationToken)
         {
             return expectedParameters.Select(e =>

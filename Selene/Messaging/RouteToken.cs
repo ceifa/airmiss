@@ -10,7 +10,7 @@ namespace Selene.Messaging
         private static readonly Regex VariableRegex =
             new Regex($"^{{(<{VariableNameRegexGroup}>.*?)}}$", RegexOptions.Compiled);
 
-        private static readonly Regex EscapedVariableRegex = new Regex(@"^{{.*?}}$", RegexOptions.Compiled);
+        private static readonly Regex EscapedVariableRegex = new Regex("^{{.*?}}$", RegexOptions.Compiled);
 
         private readonly string _token;
         private readonly Lazy<string> _variableNameLazy;
