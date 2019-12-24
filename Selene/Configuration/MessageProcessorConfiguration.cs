@@ -4,17 +4,18 @@ using System.Linq;
 using System.Reflection;
 using Selene.Internal;
 using Selene.Messaging;
+using Selene.Processor;
 
 namespace Selene.Configuration
 {
     public class MessageProcessorConfiguration
     {
-        private readonly Action<MessageProcessorDescriptor> _addMessageProcessor;
+        private readonly Action<MessageProcessor> _addMessageProcessor;
         private readonly SeleneConfiguration _seleneConfiguration;
 
         internal MessageProcessorConfiguration(
             SeleneConfiguration seleneConfiguration,
-            Action<MessageProcessorDescriptor> addMessageProcessor)
+            Action<MessageProcessor> addMessageProcessor)
         {
             _seleneConfiguration = seleneConfiguration ?? throw new ArgumentNullException(nameof(seleneConfiguration));
             _addMessageProcessor = addMessageProcessor ?? throw new ArgumentNullException(nameof(addMessageProcessor));
@@ -79,8 +80,8 @@ namespace Selene.Configuration
             if (messageProcessor == null)
                 throw new ArgumentNullException(nameof(messageProcessor));
 
-            var descriptor = new MessageProcessorDescriptor(hubType, routes.Select(r => r.EnsureIsValid()), verb,
-                messageProcessor);
+            var descriptor = new MessageProcessor(
+                hubType, routes.Select(r => r.EnsureIsValid()), verb, messageProcessor);
 
             _addMessageProcessor(descriptor);
 

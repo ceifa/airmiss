@@ -1,8 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Selene.Internal;
 
-namespace Selene.Messaging
+namespace Selene.Processor
 {
     public abstract class MessageProcessorHub
     {

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Selene.Configuration;
 using Selene.Internal;
-using Selene.Internal.Providers;
 using Selene.Messaging;
-using Selene.Processor;
 
-namespace Selene.Configuration
+namespace Selene
 {
     public class SeleneConfiguration
     {
-        private readonly List<MessageProcessorDescriptor> _messageProcessorDescriptors =
-            new List<MessageProcessorDescriptor>();
+        private readonly List<MessageProcessor> _messageProcessorDescriptors =
+            new List<MessageProcessor>();
 
         private readonly List<IMessageProtocol> _messageProtocols =
             new List<IMessageProtocol>();
@@ -36,13 +35,7 @@ namespace Selene.Configuration
         public SeleneRunner GetRunner()
         {
             var aggregateMessageProtocol = new AggregateMessageProtocol(_messageProtocols);
-
-            var descriptorProvider = new MessageProcessorProvider(_messageProcessorDescriptors);
-            var typeActivator = new TypeActivatorCache(_serviceProvider);
-            var receiverContextManager = new ReceiverContextManager();
-            var subscriptionManager = new SubscriptionManager();
-
-            var messageProcessor = new MessageProcessor(descriptorProvider, typeActivator, receiverContextManager, subscriptionManager, aggregateMessageProtocol);
+            var messageProcessor = new MessageProcessorManager();
 
             return new SeleneRunner(messageProcessor, aggregateMessageProtocol);
         }

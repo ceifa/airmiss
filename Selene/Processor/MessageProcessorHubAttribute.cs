@@ -1,6 +1,7 @@
 ﻿using System;
+using Selene.Messaging;
 
-namespace Selene.Messaging
+namespace Selene.Processor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class MessageProcessorHubAttribute : Attribute

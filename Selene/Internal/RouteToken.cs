@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Selene.Messaging
+namespace Selene.Internal
 {
     internal class RouteToken
     {
@@ -20,9 +20,11 @@ namespace Selene.Messaging
             if (string.IsNullOrWhiteSpace(token))
                 throw new ArgumentException("Route token cannot be null or white space", nameof(token));
 
-            _token = token.Trim();
+            _token = token;
             _variableNameLazy = new Lazy<string>(() => TryGetVariableName(out var variableName) ? variableName : null);
         }
+
+        public bool IsVariable => VariableName != null;
 
         public string VariableName => _variableNameLazy.Value;
 

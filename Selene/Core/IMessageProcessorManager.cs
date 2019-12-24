@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using Selene.Messaging;
 
-namespace Selene.Processor
+namespace Selene.Core
 {
-    public interface IMessageProcessor
+    public interface IMessageProcessorManager
     {
         Task<T> ProcessAsync<T>(MessageReceiver receiver, Message message, CancellationToken cancellationToken);
     }

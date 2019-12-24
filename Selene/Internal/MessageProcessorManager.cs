@@ -4,26 +4,29 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Selene.Internal;
-using Selene.Internal.Providers;
+using Selene.Core;
 using Selene.Messaging;
+using Selene.Processor;
 
-namespace Selene.Processor
+namespace Selene.Internal
 {
-    public class MessageProcessor : IMessageProcessor
+    internal class MessageProcessorManager : IMessageProcessorManager
     {
         private readonly IMessageProcessorProvider _messageProcessorProvider;
         private readonly IReceiverContextManager _receiverContextManager;
         private readonly ISubscriptionManager _subscriptionManager;
         private readonly ITypeActivatorCache _typeActivatorCache;
 
-        internal MessageProcessor(IMessageProcessorProvider messageProcessorProvider,
-            ITypeActivatorCache typeActivatorCache, IReceiverContextManager receiverContextManager, ISubscriptionManager subscriptionManager)
+        internal MessageProcessorManager(
+            IMessageProcessorProvider messageProcessorProvider,
+            ITypeActivatorCache typeActivatorCache,
+            IReceiverContextManager receiverContextManager,
+            ISubscriptionManager subscriptionManager)
         {
-            _messageProcessorProvider = messageProcessorProvider ?? throw new ArgumentNullException(nameof(messageProcessorProvider));
-            _typeActivatorCache = typeActivatorCache ?? throw new ArgumentNullException(nameof(typeActivatorCache));
-            _receiverContextManager = receiverContextManager ?? throw new ArgumentNullException(nameof(receiverContextManager));
-            _subscriptionManager = subscriptionManager ?? throw new ArgumentNullException(nameof(subscriptionManager));
+            _messageProcessorProvider = messageProcessorProvider;
+            _typeActivatorCache = typeActivatorCache;
+            _receiverContextManager = receiverContextManager;
+            _subscriptionManager = subscriptionManager;
         }
 
         public async Task<T> ProcessAsync<T>(MessageReceiver receiver, Message message, CancellationToken cancellationToken)
@@ -32,14 +35,14 @@ namespace Selene.Processor
                 throw new ArgumentNullException(nameof(message));
 
             var processor = _messageProcessorProvider.GetProcessor(message.Route, message.Verb);
-            var hubInstance = _typeActivatorCache.GetInstance(processor.MessageProcessorDescriptor.HubType);
+            var hubInstance = _typeActivatorCache.GetInstance(processor.MessageProcessor.HubType);
             var context = _receiverContextManager.GetContext(receiver);
 
             try
             {
                 PopulateMessageProcessorVariables(hubInstance, context);
 
-                var messageProcessorMethod = processor.MessageProcessorDescriptor.MessageProcessor;
+                var messageProcessorMethod = processor.MessageProcessor.ProcessorMethod;
                 var parameters = GetProcessorParameters(messageProcessorMethod.GetParameters(), processor.Variables,
                     message.Content, cancellationToken);
 

@@ -1,24 +1,24 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Selene.Core;
 using Selene.Messaging;
-using Selene.Processor;
 
 namespace Selene
 {
     public class SeleneRunner
     {
-        private readonly IMessageProcessor _messageProcessor;
+        private readonly IMessageProcessorManager _messageProcessorManager;
         private readonly IMessageProtocol _messageProtocol;
 
-        internal SeleneRunner(IMessageProcessor messageProcessor, IMessageProtocol messageProtocol)
+        internal SeleneRunner(IMessageProcessorManager messageProcessorManager, IMessageProtocol messageProtocol)
         {
-            _messageProcessor = messageProcessor;
+            _messageProcessorManager = messageProcessorManager;
             _messageProtocol = messageProtocol;
         }
 
         public Task StartAsync(CancellationToken cancellationToken = default)
         {
-            return _messageProtocol.StartAsync(_messageProcessor, cancellationToken);
+            return _messageProtocol.StartAsync(_messageProcessorManager, cancellationToken);
         }
 
         public Task StopAsync(CancellationToken cancellationToken = default)

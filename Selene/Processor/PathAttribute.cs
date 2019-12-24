@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Selene.Messaging
+namespace Selene.Processor
 {
     [AttributeUsage(AttributeTargets.Parameter)]
     public class PathAttribute : Attribute
