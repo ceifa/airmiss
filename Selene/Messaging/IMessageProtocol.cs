@@ -6,7 +6,7 @@ namespace Selene.Messaging
 {
     public interface IMessageProtocol
     {
-        Task StartAsync(IMessageProcessorManager messageProcessorManager, CancellationToken cancellationToken);
+        Task StartAsync(IMessageProcessor messageProcessor, CancellationToken cancellationToken);
 
         Task StopAsync(CancellationToken cancellationToken);
 

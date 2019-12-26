@@ -8,23 +8,21 @@ namespace Selene
 {
     public class SeleneConfiguration
     {
-        private readonly List<MessageProcessor> _messageProcessorDescriptors =
-            new List<MessageProcessor>();
+        private readonly List<ProcessorDescriptor> _processorDescriptors = new List<ProcessorDescriptor>();
 
-        private readonly List<IMessageProtocol> _messageProtocols =
-            new List<IMessageProtocol>();
+        private readonly List<IMessageProtocol> _messageProtocols = new List<IMessageProtocol>();
 
         private IServiceProvider _serviceProvider;
 
         public SeleneConfiguration()
         {
-            Processor = new MessageProcessorConfiguration(this, _messageProcessorDescriptors.Add);
-            Protocol = new MessageProtocolConfiguration(this, _messageProtocols.Add);
+            Processor = new ProcessorConfiguration(this, _processorDescriptors.Add);
+            Protocol = new ProtocolConfiguration(this, _messageProtocols.Add);
         }
 
-        public MessageProcessorConfiguration Processor { get; internal set; }
+        public ProcessorConfiguration Processor { get; internal set; }
 
-        public MessageProtocolConfiguration Protocol { get; internal set; }
+        public ProtocolConfiguration Protocol { get; internal set; }
 
         public SeleneConfiguration UsingServiceProvider(IServiceProvider serviceProvider)
         {
@@ -34,8 +32,8 @@ namespace Selene
 
         public SeleneRunner GetRunner()
         {
-            var aggregateMessageProtocol = new AggregateMessageProtocol(_messageProtocols);
-            var messageProcessor = new MessageProcessorManager();
+            var aggregateProtocol = new AggregateProtocol(_messageProtocols);
+            var messageProcessor = new MessageProcessor();
 
             return new SeleneRunner(messageProcessor, aggregateMessageProtocol);
         }

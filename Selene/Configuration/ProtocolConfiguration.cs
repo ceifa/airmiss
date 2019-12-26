@@ -3,16 +3,16 @@ using Selene.Messaging;
 
 namespace Selene.Configuration
 {
-    public class MessageProtocolConfiguration
+    public class ProtocolConfiguration
     {
-        private readonly Action<IMessageProtocol> _addMessageProtocol;
+        private readonly Action<IMessageProtocol> _addProtocol;
         private readonly SeleneConfiguration _seleneConfiguration;
 
-        internal MessageProtocolConfiguration(SeleneConfiguration seleneConfiguration,
+        internal ProtocolConfiguration(SeleneConfiguration seleneConfiguration,
             Action<IMessageProtocol> addMessageProtocol)
         {
             _seleneConfiguration = seleneConfiguration ?? throw new ArgumentNullException(nameof(seleneConfiguration));
-            _addMessageProtocol = addMessageProtocol ?? throw new ArgumentNullException(nameof(addMessageProtocol));
+            _addProtocol = addMessageProtocol ?? throw new ArgumentNullException(nameof(addMessageProtocol));
         }
 
         public SeleneConfiguration Add(IMessageProtocol messageProtocol)
@@ -20,7 +20,7 @@ namespace Selene.Configuration
             if (messageProtocol == null)
                 throw new ArgumentNullException(nameof(messageProtocol));
 
-            _addMessageProtocol(messageProtocol);
+            _addProtocol(messageProtocol);
 
             return _seleneConfiguration;
         }

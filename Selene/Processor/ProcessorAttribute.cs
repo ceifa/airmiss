@@ -4,9 +4,9 @@ using Selene.Messaging;
 namespace Selene.Processor
 {
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
-    public class MessageProcessorAttribute : Attribute
+    public class ProcessorAttribute : Attribute
     {
-        public MessageProcessorAttribute(string route, Verb verb)
+        public ProcessorAttribute(string route, Verb verb)
         {
             Route = string.IsNullOrWhiteSpace(route)
                 ? throw new ArgumentException($"Message processor {nameof(route)} cannot be empty")

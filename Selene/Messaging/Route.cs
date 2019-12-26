@@ -22,6 +22,8 @@ namespace Selene.Messaging
         {
             _route = route;
             _routeTokens = GetRouteTokens(RouteSanitizer.SanitizeRoute(_route));
+
+            EnsureIsValid();
         }
 
         public Route EnsureIsValid()
@@ -55,7 +57,7 @@ namespace Selene.Messaging
 
         public static bool Match(Route route1, Route route2)
         {
-            if (route1.EnsureIsValid()._routeTokens.Length != route2.EnsureIsValid()._routeTokens.Length)
+            if (route1._routeTokens.Length != route2._routeTokens.Length)
                 return false;
 
             return route1._routeTokens.Where((t, i) => t.VariableName == null && t != route2._routeTokens[i]).Any();

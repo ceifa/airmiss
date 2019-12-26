@@ -4,13 +4,13 @@ using Selene.Messaging;
 namespace Selene.Processor
 {
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
-    public class MessageProcessorHubAttribute : Attribute
+    public class ProcessorHubAttribute : Attribute
     {
-        public MessageProcessorHubAttribute() : this(string.Empty)
+        public ProcessorHubAttribute() : this(string.Empty)
         {
         }
 
-        public MessageProcessorHubAttribute(string routePrefix)
+        public ProcessorHubAttribute(string routePrefix)
         {
             RoutePrefix = routePrefix;
         }

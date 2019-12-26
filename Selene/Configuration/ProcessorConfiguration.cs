@@ -8,17 +8,17 @@ using Selene.Processor;
 
 namespace Selene.Configuration
 {
-    public class MessageProcessorConfiguration
+    public class ProcessorConfiguration
     {
-        private readonly Action<MessageProcessor> _addMessageProcessor;
+        private readonly Action<ProcessorDescriptor> _addProcessor;
         private readonly SeleneConfiguration _seleneConfiguration;
 
-        internal MessageProcessorConfiguration(
+        internal ProcessorConfiguration(
             SeleneConfiguration seleneConfiguration,
-            Action<MessageProcessor> addMessageProcessor)
+            Action<ProcessorDescriptor> addProcessor)
         {
             _seleneConfiguration = seleneConfiguration ?? throw new ArgumentNullException(nameof(seleneConfiguration));
-            _addMessageProcessor = addMessageProcessor ?? throw new ArgumentNullException(nameof(addMessageProcessor));
+            _addProcessor = addProcessor ?? throw new ArgumentNullException(nameof(addProcessor));
         }
 
         public SeleneConfiguration AddHub<THub>()
@@ -44,11 +44,11 @@ namespace Selene.Configuration
             if (hubType == null)
                 throw new ArgumentNullException(nameof(hubType));
 
-            var hubTypeAttributes = hubType.GetCustomAttributes<MessageProcessorHubAttribute>().ToArray();
+            var hubTypeAttributes = hubType.GetCustomAttributes<ProcessorHubAttribute>().ToArray();
 
             foreach (var hubMethod in hubType.GetMethods())
             {
-                var hubMethodAttributes = hubMethod.GetCustomAttributes<MessageProcessorAttribute>();
+                var hubMethodAttributes = hubMethod.GetCustomAttributes<ProcessorAttribute>();
 
                 foreach (var hubMethodAttribute in hubMethodAttributes)
                 {
@@ -80,10 +80,10 @@ namespace Selene.Configuration
             if (messageProcessor == null)
                 throw new ArgumentNullException(nameof(messageProcessor));
 
-            var descriptor = new MessageProcessor(
+            var descriptor = new ProcessorDescriptor(
                 hubType, routes.Select(r => r.EnsureIsValid()), verb, messageProcessor);
 
-            _addMessageProcessor(descriptor);
+            _addProcessor(descriptor);
 
             return _seleneConfiguration;
         }

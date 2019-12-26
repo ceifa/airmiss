@@ -4,7 +4,7 @@ using Selene.Messaging;
 
 namespace Selene.Core
 {
-    public interface IMessageProcessorManager
+    public interface IMessageProcessor
     {
         Task<T> ProcessAsync<T>(MessageReceiver receiver, Message message, CancellationToken cancellationToken);
     }
