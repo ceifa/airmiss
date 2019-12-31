@@ -4,8 +4,8 @@ namespace Selene.Internal.Processor
 {
     internal class ProcessorContextProvider
     {
-        private readonly IProcessorHubFactory _processorHubFactory;
         private readonly IProcessorDescriptorProvider _processorDescriptorProvider;
+        private readonly IProcessorHubFactory _processorHubFactory;
 
         public ProcessorContextProvider(
             IProcessorHubFactory processorHubFactory,

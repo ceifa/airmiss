@@ -2,7 +2,7 @@
 
 namespace Selene.Internal.Processor
 {
-    interface IProcessorContextProvider
+    internal interface IProcessorContextProvider
     {
         ProcessorContext GerProcessorContext(Message message);
     }

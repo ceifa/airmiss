@@ -31,10 +31,7 @@ namespace Selene.Configuration
             if (hubTypes == null)
                 throw new ArgumentNullException(nameof(hubTypes));
 
-            foreach (var hubType in hubTypes)
-            {
-                AddHub(hubType);
-            }
+            foreach (var hubType in hubTypes) AddHub(hubType);
 
             return _seleneConfiguration;
         }

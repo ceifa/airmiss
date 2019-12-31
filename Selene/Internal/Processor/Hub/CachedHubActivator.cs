@@ -13,9 +13,9 @@ namespace Selene.Internal
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
 
-            return type.IsAssignableFrom(typeof(IDisposable)) ?
-                _createInstance(type) :
-                _typeCache.GetOrAdd(type, _createInstance);
+            return type.IsAssignableFrom(typeof(IDisposable))
+                ? _createInstance(type)
+                : _typeCache.GetOrAdd(type, _createInstance);
         }
 
         public void Release(object instance)

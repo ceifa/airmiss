@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Selene.Core;
 using Selene.Internal.Processor;
 using Selene.Messaging;
-using Selene.Processor;
 
 namespace Selene.Internal
 {
@@ -21,7 +17,8 @@ namespace Selene.Internal
             _processorContextProvider = processorContextProvider;
         }
 
-        public async Task<T> ProcessAsync<T>(MessageReceiver receiver, Message message, CancellationToken cancellationToken)
+        public async Task<T> ProcessAsync<T>(MessageReceiver receiver, Message message,
+            CancellationToken cancellationToken)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
