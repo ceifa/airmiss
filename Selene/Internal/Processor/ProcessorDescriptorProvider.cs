@@ -1,22 +1,21 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Selene.Exceptions;
 using Selene.Messaging;
 
 namespace Selene.Internal.Processor
 {
-    internal class MessageProcessorProvider : IMessageProcessorProvider
+    internal class ProcessorDescriptorProvider : IProcessorDescriptorProvider
     {
-        private readonly IDictionary<Verb, ProcessorDescriptor[]> _messageProcessors;
+        private readonly IDictionary<Verb, Internal.ProcessorDescriptor[]> _messageProcessors;
 
-        public MessageProcessorProvider(IEnumerable<ProcessorDescriptor> messageProcessors)
+        public ProcessorDescriptorProvider(IEnumerable<Internal.ProcessorDescriptor> messageProcessors)
         {
             _messageProcessors = messageProcessors
                 .GroupBy(d => d.Verb).ToDictionary(d => d.Key, d => d.ToArray());
         }
 
-        public MessageProcessorContext GetProcessorContext(Verb verb, Route route)
+        public ProcessorDescriptor GetProcessorContext(Verb verb, Route route, out IDictionary<string, string> pathVariables)
         {
             route.EnsureIsValid();
 
@@ -27,10 +26,8 @@ namespace Selene.Internal.Processor
             if (match == default)
                 throw new ProcessorNotFoundException($"No processor was found with route '{route}' and verb '{verb}'");
 
-            return new MessageProcessorContext
-            {
-                Parameters = match.Route.GetVariableValues(route)
-            };
+            pathVariables = match.Route.GetVariableValues(route);
+            return match.Descriptor;
         }
     }
 }

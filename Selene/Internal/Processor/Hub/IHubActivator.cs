@@ -2,7 +2,7 @@
 
 namespace Selene.Internal
 {
-    internal interface ITypeActivator
+    internal interface IHubActivator
     {
         object GetInstance(Type type);
 
