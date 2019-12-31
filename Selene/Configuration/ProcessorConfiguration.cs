@@ -49,10 +49,10 @@ namespace Selene.Configuration
 
                 foreach (var hubMethodAttribute in hubMethodAttributes)
                 {
-                    var hubMethodRoute = hubMethodAttribute.GetRoute();
+                    var hubMethodRoute = hubMethodAttribute.Route;
 
                     var routes = hubTypeAttributes
-                        .Select(attribute => attribute.GetRoute() + hubMethodRoute);
+                        .Select(attribute => attribute.RoutePrefix + hubMethodRoute);
 
                     Add(hubType, routes, hubMethodAttribute.Verb, hubMethod);
                 }

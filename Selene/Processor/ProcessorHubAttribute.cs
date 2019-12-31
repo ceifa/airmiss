@@ -12,14 +12,11 @@ namespace Selene.Processor
 
         public ProcessorHubAttribute(string routePrefix)
         {
-            RoutePrefix = routePrefix;
+            RoutePrefix = string.IsNullOrWhiteSpace(routePrefix)
+                ? throw new ArgumentException($"Message processor hub {nameof(routePrefix)} cannot be empty")
+                : new Route(routePrefix);
         }
 
-        public string RoutePrefix { get; set; }
-
-        internal Route GetRoute()
-        {
-            return new Route(RoutePrefix);
-        }
+        public Route RoutePrefix { get; set; }
     }
 }
