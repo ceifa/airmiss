@@ -21,6 +21,16 @@ namespace Selene.Configuration
             _addProcessor = addProcessor ?? throw new ArgumentNullException(nameof(addProcessor));
         }
 
+        public SeleneConfiguration AddCurrentAssembly()
+        {
+            return AddAssembly(Assembly.GetCallingAssembly());
+        }
+
+        public SeleneConfiguration AddAssembly(Assembly assembly)
+        {
+            return AddHub(assembly.GetTypes().Where(type => type.IsClass).ToArray());
+        }
+
         public SeleneConfiguration AddHub<THub>()
         {
             return AddHub(typeof(THub));
