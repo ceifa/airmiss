@@ -12,19 +12,19 @@ namespace Selene.Internal.Processor
         public ProcessorContext(
             IHubLifecycle hubLifecycle,
             MethodInfo processorMethod,
-            IDictionary<string, string> parametersArguments)
+            IDictionary<string, string> pathParametersArguments)
         {
             _hubReleaser = hubLifecycle.HubReleaser;
             HubInstance = hubLifecycle.Hub;
             ProcessorMethod = processorMethod;
-            ParametersArguments = parametersArguments;
+            PathParametersArguments = pathParametersArguments;
         }
 
         public object HubInstance { get; }
 
         public MethodInfo ProcessorMethod { get; }
 
-        public IDictionary<string, string> ParametersArguments { get; }
+        public IDictionary<string, string> PathParametersArguments { get; }
 
         public void Dispose()
         {

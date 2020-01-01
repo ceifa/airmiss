@@ -4,11 +4,11 @@ namespace Selene.Internal.Processor.Hub
 {
     internal class DefaultProcessorHubFactory : IProcessorHubFactory
     {
-        private readonly IHubActivator _hubActivator;
+        private readonly ITypeActivator _typeActivator;
 
-        public DefaultProcessorHubFactory(IHubActivator hubActivator)
+        public DefaultProcessorHubFactory(ITypeActivator typeActivator)
         {
-            _hubActivator = hubActivator;
+            _typeActivator = typeActivator;
         }
 
         public HubLifecycle CreateHub(ProcessorDescriptor processorDescriptor)
@@ -16,8 +16,8 @@ namespace Selene.Internal.Processor.Hub
             if (processorDescriptor == null)
                 throw new ArgumentNullException(nameof(processorDescriptor));
 
-            var instance = _hubActivator.GetInstance(processorDescriptor.HubType);
-            return new HubLifecycle(instance, () => _hubActivator.Release(instance));
+            var instance = _typeActivator.GetInstance(processorDescriptor.HubType);
+            return new HubLifecycle(instance, () => _typeActivator.Release(instance));
         }
     }
 }

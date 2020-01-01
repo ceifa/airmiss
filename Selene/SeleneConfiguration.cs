@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Selene.Configuration;
-using Selene.Core;
 using Selene.Internal;
 using Selene.Messaging;
 
@@ -10,8 +9,7 @@ namespace Selene
     public class SeleneConfiguration
     {
         private readonly List<IMessageProtocol> _messageProtocols = new List<IMessageProtocol>();
-
-        private readonly List<IMiddleware> _middlewares = new List<IMiddleware>();
+        private readonly List<Type> _middlewares = new List<Type>();
         private readonly List<ProcessorDescriptor> _processorDescriptors = new List<ProcessorDescriptor>();
 
         private IServiceProvider _serviceProvider;
@@ -37,10 +35,7 @@ namespace Selene
 
         public SeleneRunner GetRunner()
         {
-            var aggregateProtocol = new AggregateProtocol(_messageProtocols);
-            var messageProcessor = new MessageProcessor();
-
-            return new SeleneRunner(messageProcessor, aggregateMessageProtocol);
+            return null;
         }
     }
 }

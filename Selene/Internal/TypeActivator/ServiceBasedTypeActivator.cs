@@ -2,11 +2,11 @@
 
 namespace Selene.Internal.Processor.Hub
 {
-    public class ServiceBasedHubActivator : IHubActivator
+    public class ServiceBasedTypeActivator : ITypeActivator
     {
         private readonly IServiceProvider _serviceProvider;
 
-        public ServiceBasedHubActivator(IServiceProvider serviceProvider)
+        public ServiceBasedTypeActivator(IServiceProvider serviceProvider)
         {
             _serviceProvider = serviceProvider;
         }

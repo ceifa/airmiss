@@ -20,10 +20,33 @@ namespace Selene.Messaging
 
         public Route(string route)
         {
-            _route = route;
-            _routeTokens = GetRouteTokens(RouteSanitizer.SanitizeRoute(_route));
+            _route = RouteSanitizer.SanitizeRoute(route);
+            _routeTokens = GetRouteTokens(_route);
 
             EnsureIsValid();
+        }
+
+        public static bool Match(Route route1, Route route2)
+        {
+            if (route1._routeTokens.Length != route2._routeTokens.Length)
+                return false;
+
+            return route1._routeTokens.Where((t, i) => t.VariableName == null && t != route2._routeTokens[i]).Any();
+        }
+
+        public static Route operator +(Route route1, Route route2)
+        {
+            return route1.Combine(route2);
+        }
+
+        public static bool operator ==(Route route1, Route route2)
+        {
+            return route1.Equals(route2);
+        }
+
+        public static bool operator !=(Route route1, Route route2)
+        {
+            return !route1.Equals(route2);
         }
 
         public Route EnsureIsValid()
@@ -52,25 +75,27 @@ namespace Selene.Messaging
 
             return _routeTokens.Zip(populatedRoute._routeTokens, (t1, t2) => (t1, t2))
                 .Where(routes => routes.t1.IsVariable)
-                .ToDictionary(routes => routes.t1.VariableName, routes => routes.t2.ToString());
+                .ToDictionary(routes => routes.t1.VariableName!, routes => routes.t2.ToString());
         }
 
-        public static bool Match(Route route1, Route route2)
+        public override bool Equals(object obj)
         {
-            if (route1._routeTokens.Length != route2._routeTokens.Length)
-                return false;
+            if (obj is Route route)
+            {
+                return _route.Equals(route._route);
+            }
 
-            return route1._routeTokens.Where((t, i) => t.VariableName == null && t != route2._routeTokens[i]).Any();
-        }
-
-        public static Route operator +(Route route1, Route route2)
-        {
-            return route1.Combine(route2);
+            return false;
         }
 
         public override string ToString()
         {
             return _route;
+        }
+
+        public override int GetHashCode()
+        {
+            return _route.GetHashCode();
         }
 
         private static RouteToken[] GetRouteTokens(string route)

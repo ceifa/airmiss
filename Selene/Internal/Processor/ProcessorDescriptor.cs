@@ -11,7 +11,7 @@ namespace Selene.Internal
         internal ProcessorDescriptor(Type hubType, IEnumerable<Route> routes, Verb verb, MethodInfo processorMethod)
         {
             HubType = hubType;
-            Routes = routes?.ToArray();
+            Routes = routes.ToArray();
             Verb = verb;
             ProcessorMethod = processorMethod;
         }
