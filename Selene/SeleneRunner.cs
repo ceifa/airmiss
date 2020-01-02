@@ -10,7 +10,7 @@ namespace Selene
         private readonly IMessageProcessor _messageProcessor;
         private readonly IMessageProtocol _messageProtocol;
 
-        internal SeleneRunner(IMessageProcessor messageProcessor, IMessageProtocol messageProtocol)
+        public SeleneRunner(IMessageProcessor messageProcessor, IMessageProtocol messageProtocol)
         {
             _messageProcessor = messageProcessor;
             _messageProtocol = messageProtocol;
