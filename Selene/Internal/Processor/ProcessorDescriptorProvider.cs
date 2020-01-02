@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Selene.Core;
 using Selene.Exceptions;
 using Selene.Messaging;
 
@@ -7,15 +8,15 @@ namespace Selene.Internal.Processor
 {
     internal class ProcessorDescriptorProvider : IProcessorDescriptorProvider
     {
-        private readonly IDictionary<Verb, ProcessorDescriptor[]> _messageProcessors;
+        private readonly IDictionary<Verb, IProcessorDescriptor[]> _messageProcessors;
 
-        public ProcessorDescriptorProvider(IEnumerable<ProcessorDescriptor> messageProcessors)
+        public ProcessorDescriptorProvider(IEnumerable<IProcessorDescriptor> messageProcessors)
         {
             _messageProcessors = messageProcessors
                 .GroupBy(d => d.Verb).ToDictionary(d => d.Key, d => d.ToArray());
         }
 
-        public ProcessorDescriptor GetProcessorContext(Verb verb, Route route,
+        public IProcessorDescriptor GetProcessorContext(Verb verb, Route route,
             out IDictionary<string, string> pathVariables)
         {
             route.EnsureIsValid();

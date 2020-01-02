@@ -16,7 +16,7 @@ namespace Selene.Internal.Processor
         public Task<object> InvokeAsync(ProcessorContext processorContext, IContext context, CancellationToken cancellationToken)
         {
             Task<object> ProcessorInvoke() => Task.FromResult(
-                processorContext.ProcessorMethod.Invoke(processorContext.HubInstance, context.Arguments));
+                processorContext.ProcessorDescriptor.ProcessorMethod.Invoke(processorContext.HubInstance, context.Arguments));
 
             return _middleware.InvokeAsync(context, ProcessorInvoke, cancellationToken);
         }

@@ -1,4 +1,5 @@
 ﻿using System;
+using Selene.Core;
 
 namespace Selene.Internal.Processor.Hub
 {
@@ -11,7 +12,7 @@ namespace Selene.Internal.Processor.Hub
             _typeActivator = typeActivator;
         }
 
-        public HubLifecycle CreateHub(ProcessorDescriptor processorDescriptor)
+        public HubLifecycle CreateHub(IProcessorDescriptor processorDescriptor)
         {
             if (processorDescriptor == null)
                 throw new ArgumentNullException(nameof(processorDescriptor));

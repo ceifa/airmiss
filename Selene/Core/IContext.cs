@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Reflection;
 
 namespace Selene.Core
 {
     public interface IContext
     {
-        object[] Arguments { get; set; }
+        IClient Sender { get; }
+
+        IProcessorDescriptor Processor { get; }
+
+        object[] Arguments { get; }
     }
 }

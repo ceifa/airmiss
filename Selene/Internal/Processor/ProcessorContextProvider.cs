@@ -2,7 +2,7 @@
 
 namespace Selene.Internal.Processor
 {
-    internal class ProcessorContextProvider
+    internal class ProcessorContextProvider : IProcessorContextProvider
     {
         private readonly IProcessorDescriptorProvider _processorDescriptorProvider;
         private readonly IProcessorHubFactory _processorHubFactory;
@@ -15,12 +15,12 @@ namespace Selene.Internal.Processor
             _processorDescriptorProvider = processorDescriptorProvider;
         }
 
-        public ProcessorContext GerProcessorContext(Message message)
+        public ProcessorContext GetProcessorContext(Message message)
         {
             var processorDescriptor =
                 _processorDescriptorProvider.GetProcessorContext(message.Verb, message.Route, out var pathVariables);
             var processorHub = _processorHubFactory.CreateHub(processorDescriptor);
-            return new ProcessorContext(processorHub, processorDescriptor.ProcessorMethod, pathVariables);
+            return new ProcessorContext(processorHub, processorDescriptor, pathVariables);
         }
     }
 }

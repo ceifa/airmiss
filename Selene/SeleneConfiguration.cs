@@ -1,24 +1,23 @@
 ﻿using System;
-using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Selene.Configuration;
 using Selene.Internal;
-using Selene.Messaging;
+using Selene.Internal.Processor.Hub;
 
 namespace Selene
 {
     public class SeleneConfiguration
     {
-        private readonly List<IMessageProtocol> _messageProtocols = new List<IMessageProtocol>();
-        private readonly List<Type> _middlewares = new List<Type>();
-        private readonly List<ProcessorDescriptor> _processorDescriptors = new List<ProcessorDescriptor>();
-
-        private IServiceProvider _serviceProvider;
+        private readonly IServiceCollection _serviceCollection;
 
         public SeleneConfiguration()
         {
-            Processor = new ProcessorConfiguration(this, _processorDescriptors.Add);
-            Protocol = new ProtocolConfiguration(this, _messageProtocols.Add);
-            Middleware = new MiddlewareConfiguration(this, _middlewares.Add);
+            _serviceCollection = new ServiceCollection();
+
+            Processor = new ProcessorConfiguration(this, Add);
+            Protocol = new ProtocolConfiguration(this, Add);
+            Middleware = new MiddlewareConfiguration(this, Add);
         }
 
         public ProcessorConfiguration Processor { get; internal set; }
@@ -29,13 +28,16 @@ namespace Selene
 
         public SeleneConfiguration UsingServiceProvider(IServiceProvider serviceProvider)
         {
-            _serviceProvider = serviceProvider;
+            _serviceCollection.TryAddSingleton<ITypeActivator>(new ServiceBasedTypeActivator(serviceProvider));
             return this;
         }
 
         public SeleneRunner GetRunner()
         {
-            return null;
+            var provider = TypeRegister.RegisterTypesAndGetProvider(_serviceCollection);
+            return provider.GetRequiredService<SeleneRunner>();
         }
+
+        private void Add<T>(T instance) where T : class => _serviceCollection.TryAddSingleton(instance);
     }
 }

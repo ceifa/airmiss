@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Selene.Internal;
+using Selene.Core;
+using Selene.Internal.Processor;
 using Selene.Messaging;
 using Selene.Processor;
 
@@ -10,12 +11,12 @@ namespace Selene.Configuration
 {
     public class ProcessorConfiguration
     {
-        private readonly Action<ProcessorDescriptor> _addProcessor;
+        private readonly Action<IProcessorDescriptor> _addProcessor;
         private readonly SeleneConfiguration _seleneConfiguration;
 
         internal ProcessorConfiguration(
             SeleneConfiguration seleneConfiguration,
-            Action<ProcessorDescriptor> addProcessor)
+            Action<IProcessorDescriptor> addProcessor)
         {
             _seleneConfiguration = seleneConfiguration ?? throw new ArgumentNullException(nameof(seleneConfiguration));
             _addProcessor = addProcessor ?? throw new ArgumentNullException(nameof(addProcessor));
@@ -28,6 +29,9 @@ namespace Selene.Configuration
 
         public SeleneConfiguration AddAssembly(Assembly assembly)
         {
+            if (assembly == null)
+                throw new ArgumentNullException(nameof(assembly));
+
             return AddHub(assembly.GetTypes().Where(type => type.IsClass).ToArray());
         }
 
@@ -51,32 +55,40 @@ namespace Selene.Configuration
             if (hubType == null)
                 throw new ArgumentNullException(nameof(hubType));
 
-            var hubTypeAttributes = hubType.GetCustomAttributes<ProcessorHubAttribute>().ToArray();
-
             foreach (var hubMethod in hubType.GetMethods())
             {
-                var hubMethodAttributes = hubMethod.GetCustomAttributes<ProcessorAttribute>();
-
-                foreach (var hubMethodAttribute in hubMethodAttributes)
-                {
-                    var hubMethodRoute = hubMethodAttribute.Route;
-
-                    var routes = hubTypeAttributes
-                        .Select(attribute => attribute.RoutePrefix + hubMethodRoute);
-
-                    Add(hubType, routes, hubMethodAttribute.Verb, hubMethod);
-                }
+                Add(hubType, hubMethod);
             }
 
             return _seleneConfiguration;
         }
 
-        public SeleneConfiguration Add<THub>(IEnumerable<Route> routes, Verb verb, MethodInfo messageProcessor)
+        public SeleneConfiguration Add(Type hubType, MethodInfo processor)
         {
-            return Add(typeof(THub), routes, verb, messageProcessor);
+            if (hubType == null)
+                throw new ArgumentNullException(nameof(hubType));
+
+            if (processor == null)
+                throw new ArgumentNullException(nameof(processor));
+
+            var hubTypeAttributes = hubType.GetCustomAttributes<ProcessorHubAttribute>().ToArray();
+            var hubMethodAttributes = processor.GetCustomAttributes<ProcessorAttribute>();
+
+            foreach (var hubMethodAttribute in hubMethodAttributes)
+            {
+                var hubMethodRoute = hubMethodAttribute.Route;
+
+                var routes = hubTypeAttributes
+                    .Select(attribute => attribute.RoutePrefix + hubMethodRoute);
+
+                Add(hubType, routes, hubMethodAttribute.Verb, processor, GetLocalMiddlewares(hubType, processor));
+            }
+
+            return _seleneConfiguration;
         }
 
-        public SeleneConfiguration Add(Type hubType, IEnumerable<Route> routes, Verb verb, MethodInfo messageProcessor)
+
+        private void Add(Type hubType, IEnumerable<Route> routes, Verb verb, MethodInfo processor, IEnumerable<Type> middlewares)
         {
             if (hubType == null)
                 throw new ArgumentNullException(nameof(hubType));
@@ -84,15 +96,28 @@ namespace Selene.Configuration
             if (routes == null)
                 throw new ArgumentNullException(nameof(routes));
 
-            if (messageProcessor == null)
-                throw new ArgumentNullException(nameof(messageProcessor));
+            if (processor == null)
+                throw new ArgumentNullException(nameof(processor));
 
-            var descriptor = new ProcessorDescriptor(
-                hubType, routes.Select(r => r.EnsureIsValid()), verb, messageProcessor);
+            if (middlewares == null) 
+                throw new ArgumentNullException(nameof(middlewares));
+
+            var descriptor = new ProcessorDescriptor(hubType, routes.Select(r => r.EnsureIsValid()), verb, processor);
+
+            bool LocalMiddlewareShouldRun(IProcessorDescriptor processorDescriptor) => processorDescriptor.Equals(descriptor);
+            foreach (var middleware in middlewares)
+            {
+                _seleneConfiguration.Middleware.Add(middleware, LocalMiddlewareShouldRun);
+            }
 
             _addProcessor(descriptor);
+        }
 
-            return _seleneConfiguration;
+        private static IEnumerable<Type> GetLocalMiddlewares(MemberInfo hubType, MemberInfo processor)
+        {
+            return hubType.GetCustomAttributes<MiddlewareAttribute>()
+                .Concat(processor.GetCustomAttributes<MiddlewareAttribute>())
+                .Select(m => m.MiddlewareType);
         }
     }
 }
