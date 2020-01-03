@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Selene.Configuration;
 using Selene.Internal;
 using Selene.Internal.Processor.Hub;
-using Selene.Messaging;
 
 namespace Selene
 {
@@ -36,9 +34,6 @@ namespace Selene
 
         public SeleneRunner GetRunner()
         {
-            if (_serviceCollection.Any(s => s.ServiceType.Equals(typeof(IMessageProtocol))))
-                throw new InvalidOperationException($"At least one {nameof(Protocol)} should be defined");
-
             var provider = TypeRegister.RegisterTypesAndGetProvider(_serviceCollection);
             return provider.GetRequiredService<SeleneRunner>();
         }

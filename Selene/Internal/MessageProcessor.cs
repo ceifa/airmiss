@@ -11,16 +11,16 @@ namespace Selene.Internal
     internal class MessageProcessor : IMessageProcessor
     {
         private readonly IProcessorContextProvider _processorContextProvider;
-        private readonly IContextProvider _contextProvider;
+        //private readonly IContextProvider _contextProvider;
         private readonly IProcessorInvoker _processorInvoker;
 
-        internal MessageProcessor(
+        public MessageProcessor(
             IProcessorContextProvider processorContextProvider,
-            IContextProvider contextProvider,
+            //IContextProvider contextProvider,
             IProcessorInvoker processorInvoker)
         {
             _processorContextProvider = processorContextProvider;
-            _contextProvider = contextProvider;
+            //_contextProvider = contextProvider;
             _processorInvoker = processorInvoker;
         }
 
@@ -30,7 +30,7 @@ namespace Selene.Internal
                 throw new ArgumentNullException(nameof(message));
 
             using var processorContext = _processorContextProvider.GetProcessorContext(message);
-            var context = _contextProvider.GetContext(sender, processorContext, message);
+            IContext context = null;//_contextProvider.GetContext(sender, processorContext, message);
             await _processorInvoker.InvokeAsync(processorContext, context, cancellationToken);
             return default;
         }
