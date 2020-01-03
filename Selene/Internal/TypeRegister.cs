@@ -19,8 +19,8 @@ namespace Selene.Internal
             serviceCollection.TryAddSingleton<IProcessorHubFactory, DefaultProcessorHubFactory>();
             serviceCollection.TryAddSingleton<IProcessorDescriptorProvider, ProcessorDescriptorProvider>();
             serviceCollection.TryAddSingleton<IProcessorContextProvider, ProcessorContextProvider>();
-            serviceCollection.TryAddSingleton<IMessageProcessor, MessageProcessor>();
             serviceCollection.TryAddSingleton<ITypeActivator, CachedTypeActivator>();
+            serviceCollection.TryAddSingleton<IMessageProcessor, MessageProcessor>();
 
             return serviceCollection
                 .AddSingleton<SeleneRunner>()

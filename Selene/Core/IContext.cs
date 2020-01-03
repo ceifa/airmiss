@@ -1,6 +1,4 @@
-﻿using System.Reflection;
-
-namespace Selene.Core
+﻿namespace Selene.Core
 {
     public interface IContext
     {

@@ -4,11 +4,14 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Selene.Configuration;
 using Selene.Internal;
 using Selene.Internal.Processor.Hub;
+using Selene.Internal.TypeActivator;
 
 namespace Selene
 {
     public class SeleneConfiguration
     {
+        private bool _runnerWasCreated;
+
         private readonly IServiceCollection _serviceCollection;
 
         public SeleneConfiguration()
@@ -28,12 +31,19 @@ namespace Selene
 
         public SeleneConfiguration UsingServiceProvider(IServiceProvider serviceProvider)
         {
-            _serviceCollection.TryAddSingleton<ITypeActivator>(new ServiceBasedTypeActivator(serviceProvider));
+            _serviceCollection.TryAddScoped<IClientServiceProvider>(_ => new ClientServiceProvider(serviceProvider));
+            _serviceCollection.TryAddScoped<ITypeActivator, ServiceBasedTypeActivator>();
             return this;
         }
 
         public SeleneRunner GetRunner()
         {
+            // TODO: Possibility to build runners without referencing this configuration
+            if (_runnerWasCreated)
+            {
+                throw new InvalidOperationException("Cannot create more than one runner for this configuration");
+            }
+
             var provider = TypeRegister.RegisterTypesAndGetProvider(_serviceCollection);
             return provider.GetRequiredService<SeleneRunner>();
         }
