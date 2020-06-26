@@ -6,20 +6,20 @@ namespace Selene.Configuration
 {
     public class MiddlewareConfiguration
     {
-        private readonly Action<MiddlewareDescriptor> _addMiddleware;
+        private readonly Action<IMiddlewareDescriptor> _addMiddleware;
         private readonly SeleneConfiguration _seleneConfiguration;
 
         internal MiddlewareConfiguration(
             SeleneConfiguration seleneConfiguration,
-            Action<MiddlewareDescriptor> addMiddleware)
+            Action<IMiddlewareDescriptor> addMiddleware)
         {
             _seleneConfiguration = seleneConfiguration ?? throw new ArgumentNullException(nameof(seleneConfiguration));
             _addMiddleware = addMiddleware ?? throw new ArgumentNullException(nameof(addMiddleware));
         }
 
-        public SeleneConfiguration Add<TMiddleware>() where TMiddleware : IMiddleware
+        public SeleneConfiguration Add<TMiddleware>(Predicate<IProcessorDescriptor>? shouldRun = null) where TMiddleware : IMiddleware
         {
-            return Add(typeof(TMiddleware));
+            return Add(typeof(TMiddleware), shouldRun);
         }
 
         public SeleneConfiguration Add(Type middlewareType, Predicate<IProcessorDescriptor>? shouldRun = null)

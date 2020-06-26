@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 using Selene.Core;
 using Selene.Messaging;
 
-namespace Selene.Internal
+namespace Selene.Internal.Protocol
 {
     internal class AggregateProtocol : IMessageProtocol
     {
-        private readonly IEnumerable<IMessageProtocol> _messageProtocols;
+        private readonly IEnumerable<IMessageProtocolDescriptor> _messageProtocolsDescriptors;
 
-        public AggregateProtocol(IEnumerable<IMessageProtocol> messageProtocols)
+        public AggregateProtocol(IEnumerable<IMessageProtocolDescriptor> messageProtocolsDescriptors)
         {
-            _messageProtocols = messageProtocols;
+            _messageProtocolsDescriptors = messageProtocolsDescriptors;
         }
 
         public Task SendAsync<T>(string receiverIdentity, T message, CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ namespace Selene.Internal
 
         private Task ExecuteAggregatedAsync(Func<IMessageProtocol, Task> func)
         {
-            return Task.WhenAll(_messageProtocols.Select(func));
+            return Task.WhenAll(_messageProtocolsDescriptors.Select(d => d.MessageProtocol).Select(func));
         }
     }
 }

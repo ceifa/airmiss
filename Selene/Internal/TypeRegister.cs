@@ -5,6 +5,7 @@ using Selene.Core;
 using Selene.Internal.Middleware;
 using Selene.Internal.Processor;
 using Selene.Internal.Processor.Hub;
+using Selene.Internal.Protocol;
 using Selene.Messaging;
 
 namespace Selene.Internal

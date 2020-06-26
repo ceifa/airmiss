@@ -44,8 +44,15 @@ namespace Selene
                 throw new InvalidOperationException("Cannot create more than one runner for this configuration");
             }
 
-            var provider = TypeRegister.RegisterTypesAndGetProvider(_serviceCollection);
-            return provider.GetRequiredService<SeleneRunner>();
+            try
+            {
+                var provider = TypeRegister.RegisterTypesAndGetProvider(_serviceCollection);
+                return provider.GetRequiredService<SeleneRunner>();
+            }
+            finally
+            {
+                _runnerWasCreated = true;
+            }
         }
 
         private void Add<T>(T instance) where T : class => _serviceCollection.TryAddSingleton(instance);

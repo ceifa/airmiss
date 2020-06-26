@@ -3,7 +3,7 @@ using Selene.Core;
 
 namespace Selene.Internal.Middleware
 {
-    internal class MiddlewareDescriptor
+    internal class MiddlewareDescriptor : IMiddlewareDescriptor
     {
         private readonly Predicate<IProcessorDescriptor>? _shouldRun;
 

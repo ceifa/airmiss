@@ -1,4 +1,5 @@
-﻿using Xunit;
+﻿using System;
+using Xunit;
 
 namespace Selene.Tests.Configuration
 {
@@ -12,6 +13,18 @@ namespace Selene.Tests.Configuration
             var runner = seleneConfiguration.GetRunner();
 
             Assert.NotNull(runner);
+        }
+
+        [Fact]
+        public void SeleneRunnerCannotBeCreatedTwiceWithSameConfiguration()
+        {
+            var seleneConfiguration = new SeleneConfiguration();
+
+            var runner = seleneConfiguration.GetRunner();
+
+            Assert.Throws<InvalidOperationException>(() => {
+                seleneConfiguration.GetRunner();
+            });
         }
     }
 }
