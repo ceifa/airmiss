@@ -8,13 +8,13 @@ using Selene.Messaging;
 
 namespace Selene.Internal.Protocol
 {
-    internal class AggregateProtocol : IMessageProtocol
+    internal class AggregateProtocol : IMessageProtocol, IDisposable
     {
-        private readonly IEnumerable<IMessageProtocolDescriptor> _messageProtocolsDescriptors;
+        private readonly IEnumerable<IMessageProtocol> _messageProtocols;
 
         public AggregateProtocol(IEnumerable<IMessageProtocolDescriptor> messageProtocolsDescriptors)
         {
-            _messageProtocolsDescriptors = messageProtocolsDescriptors;
+            _messageProtocols = messageProtocolsDescriptors.Select(d => d.MessageProtocol);
         }
 
         public Task SendAsync<T>(string receiverIdentity, T message, CancellationToken cancellationToken)
@@ -35,7 +35,15 @@ namespace Selene.Internal.Protocol
 
         private Task ExecuteAggregatedAsync(Func<IMessageProtocol, Task> func)
         {
-            return Task.WhenAll(_messageProtocolsDescriptors.Select(d => d.MessageProtocol).Select(func));
+            return Task.WhenAll(_messageProtocols.Select(func));
+        }
+
+        public void Dispose()
+        {
+            foreach (var disposable in _messageProtocols.OfType<IDisposable>())
+            {
+                disposable.Dispose();
+            }
         }
     }
 }

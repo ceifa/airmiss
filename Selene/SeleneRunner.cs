@@ -1,11 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Selene.Core;
 using Selene.Messaging;
 
 namespace Selene
 {
-    public class SeleneRunner
+    public class SeleneRunner : IDisposable
     {
         private readonly IMessageProcessor _messageProcessor;
         private readonly IMessageProtocol _messageProtocol;
@@ -24,6 +25,14 @@ namespace Selene
         public Task StopAsync(CancellationToken cancellationToken = default)
         {
             return _messageProtocol.StopAsync(cancellationToken);
+        }
+
+        public void Dispose()
+        {
+            if (_messageProtocol is IDisposable disposableProtocol)
+            {
+                disposableProtocol.Dispose();
+            }
         }
     }
 }

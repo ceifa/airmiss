@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Selene.Tests.Protocol;
+using System;
 using Xunit;
 
 namespace Selene.Tests.Configuration
@@ -16,15 +17,32 @@ namespace Selene.Tests.Configuration
         }
 
         [Fact]
-        public void SeleneRunnerCannotBeCreatedTwiceWithSameConfiguration()
+        public void SeleneRunnerShouldNotReferenceToItsConfigurationAfterBeingCreated()
         {
-            var seleneConfiguration = new SeleneConfiguration();
+            (SeleneRunner, WeakReference) CreateRunner()
+            {
+                var seleneConfiguration = new SeleneConfiguration();
+                return (seleneConfiguration.GetRunner(), new WeakReference(seleneConfiguration));
+            }
+            var (runner, wr) = CreateRunner();
 
-            var runner = seleneConfiguration.GetRunner();
+            GC.Collect();
 
-            Assert.Throws<InvalidOperationException>(() => {
-                seleneConfiguration.GetRunner();
-            });
+            Assert.False(wr.IsAlive);
+            GC.KeepAlive(runner);
+        }
+
+        [Fact]
+        public void SeleneRunnerShouldDisposeProtocolAfterBeingDisposed()
+        {
+            var disposableProtocol = new DisposableProtocol();
+            var runner = new SeleneConfiguration()
+                .Protocol.Add(disposableProtocol)
+                .GetRunner();
+            
+            runner.Dispose();
+
+            Assert.True(disposableProtocol.IsDisposable);
         }
     }
 }

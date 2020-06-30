@@ -38,12 +38,6 @@ namespace Selene
 
         public SeleneRunner GetRunner()
         {
-            // TODO: Possibility to build runners without referencing this configuration
-            if (_runnerWasCreated)
-            {
-                throw new InvalidOperationException("Cannot create more than one runner for this configuration");
-            }
-
             try
             {
                 var provider = TypeRegister.RegisterTypesAndGetProvider(_serviceCollection);

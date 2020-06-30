@@ -3,11 +3,11 @@ using Selene.Core;
 
 namespace Selene.Internal.Processor.Hub
 {
-    internal class DefaultProcessorHubFactory : IProcessorHubFactory
+    internal class ProcessorHubFactory : IProcessorHubFactory
     {
         private readonly ITypeActivator _typeActivator;
 
-        public DefaultProcessorHubFactory(ITypeActivator typeActivator)
+        public ProcessorHubFactory(ITypeActivator typeActivator)
         {
             _typeActivator = typeActivator;
         }

@@ -2,7 +2,6 @@
 using Selene.Core;
 using Selene.Internal.TypeActivator;
 using Selene.Messaging;
-using System;
 using System.Threading;
 using System.Threading.Tasks;
 
