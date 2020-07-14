@@ -8,7 +8,7 @@ namespace Selene.Internal
         private const string VariableNameRegexGroup = nameof(VariableName);
 
         private static readonly Regex VariableRegex =
-            new Regex($"^{{(<{VariableNameRegexGroup}>.*?)}}$", RegexOptions.Compiled);
+            new Regex($"^{{(?<{VariableNameRegexGroup}>.*?)}}$", RegexOptions.Compiled);
 
         private readonly string _token;
         private readonly Lazy<string?> _variableNameLazy;
@@ -19,7 +19,7 @@ namespace Selene.Internal
                 throw new ArgumentException("Route token cannot be null or white space", nameof(token));
 
             _token = token;
-            _variableNameLazy = new Lazy<string?>(() => GetVariableName());
+            _variableNameLazy = new Lazy<string?>(GetVariableName);
         }
 
         public bool IsVariable => VariableName != null;

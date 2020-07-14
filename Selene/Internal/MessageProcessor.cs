@@ -30,10 +30,27 @@ namespace Selene.Internal
                 throw new ArgumentNullException(nameof(message));
 
             using var processorContext = _processorContextProvider.GetProcessorContext(message);
-            var context =_contextProvider.GetContext(sender, processorContext, message);
-            await _processorInvoker.InvokeAsync(processorContext, context, cancellationToken);
+            var context =_contextProvider.GetContext(sender, processorContext, message, cancellationToken);
+            var result = await _processorInvoker.InvokeAsync(processorContext, context, cancellationToken);
 
-            return default;
+            return await HandleResultAsync<T>(result);
+        }
+
+        private async Task<T> HandleResultAsync<T>(object result)
+        {
+            switch (result)
+            {
+                case Task<T> genericTask:
+                    return await genericTask;
+                case Task task:
+                    await task;
+                    return default!;
+                case T resultObject:
+                    return resultObject;
+                default:
+                    throw new InvalidCastException(
+                        $"Value returned from message processor is not of type {typeof(T).Name}");
+            }
         }
     }
 }

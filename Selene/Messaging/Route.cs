@@ -14,7 +14,7 @@ namespace Selene.Messaging
         private readonly string _route;
         private readonly RouteToken[] _routeTokens;
 
-        public Route(Uri route) : this(route.AbsoluteUri)
+        public Route(Uri route) : this(route.AbsolutePath)
         {
         }
 

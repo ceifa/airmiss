@@ -6,6 +6,6 @@
 
         IProcessorDescriptor Processor { get; }
 
-        object[] Arguments { get; }
+        object?[] Arguments { get; }
     }
 }

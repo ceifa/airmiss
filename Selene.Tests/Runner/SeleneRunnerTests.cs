@@ -59,25 +59,26 @@ namespace Selene.Tests.Runner
 
             runner.Dispose();
 
-            Assert.True(disposableProtocol.IsDisposable);
+            Assert.True(disposableProtocol.IsDisposed);
         }
 
         [Fact]
         public async Task SeleneRunnerShouldNotDisposeWhileRunning()
         {
+            var disposableProtocol = new DisposableProtocol();
             var runner = new SeleneConfiguration()
+                .Protocol.Add(disposableProtocol)
                 .GetRunner();
 
             await runner.StartAsync();
+            runner.Dispose();
 
-            Assert.Throws<InvalidOperationException>(() =>
-            {
-                runner.Dispose();
-            });
+            Assert.True(runner.IsRunning);
+            Assert.False(disposableProtocol.IsDisposed);
         }
 
         [Fact]
-        public async Task SeleneRunnerShouldNotBeAbleToDisposeAfterStopped()
+        public async Task SeleneRunnerShouldBeAbleToDisposeAfterStopped()
         {
             var runner = new SeleneConfiguration()
                 .GetRunner();
@@ -86,6 +87,7 @@ namespace Selene.Tests.Runner
             await runner.StopAsync();
 
             runner.Dispose();
+            Assert.False(runner.IsRunning);
         }
     }
 }

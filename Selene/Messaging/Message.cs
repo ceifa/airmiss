@@ -6,6 +6,6 @@
 
         public Verb Verb { get; set; }
 
-        public object Content { get; set; }
+        public object? Content { get; set; }
     }
 }

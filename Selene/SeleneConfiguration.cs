@@ -10,8 +10,6 @@ namespace Selene
 {
     public class SeleneConfiguration
     {
-        private bool _runnerWasCreated;
-
         private readonly IServiceCollection _serviceCollection;
 
         public SeleneConfiguration()
@@ -38,15 +36,8 @@ namespace Selene
 
         public SeleneRunner GetRunner()
         {
-            try
-            {
-                var provider = TypeRegister.RegisterTypesAndGetProvider(_serviceCollection);
-                return provider.GetRequiredService<SeleneRunner>();
-            }
-            finally
-            {
-                _runnerWasCreated = true;
-            }
+            var provider = TypeRegister.RegisterTypesAndGetProvider(_serviceCollection);
+            return provider.GetRequiredService<SeleneRunner>();
         }
 
         private void Add<T>(T instance) where T : class => _serviceCollection.TryAddSingleton(instance);

@@ -8,7 +8,7 @@ namespace Selene
 {
     public class SeleneRunner : IDisposable
     {
-        public bool IsRunning { get; private set; }
+        private readonly object _locker = new object();
 
         private readonly IMessageProcessor _messageProcessor;
         private readonly IMessageProtocol _messageProtocol;
@@ -19,15 +19,24 @@ namespace Selene
             _messageProtocol = messageProtocol;
         }
 
+        public bool IsRunning { get; private set; }
+
         public Task StartAsync(CancellationToken cancellationToken = default)
         {
-            try
+            lock (_locker)
             {
-                return _messageProtocol.StartAsync(_messageProcessor, cancellationToken);
-            }
-            finally
-            {
-                IsRunning = true;
+                try
+                {
+                    new ThreadStart(() =>
+                        _messageProtocol.StartAsync(_messageProcessor, cancellationToken))
+                        .Invoke();
+
+                    return Task.CompletedTask;
+                }
+                finally
+                {
+                    IsRunning = true;
+                }
             }
         }
 
@@ -38,24 +47,22 @@ namespace Selene
                 throw new InvalidOperationException("Runner cannot be stop because it's not running");
             }
 
-            try
+            lock (_locker)
             {
-                return _messageProtocol.StopAsync(cancellationToken);
-            }
-            finally
-            {
-                IsRunning = false;
+                try
+                {
+                    return _messageProtocol.StopAsync(cancellationToken);
+                }
+                finally
+                {
+                    IsRunning = false;
+                }
             }
         }
 
         public void Dispose()
         {
-            if (IsRunning)
-            {
-                throw new InvalidOperationException("Runner cannot be disposed while running");
-            }
-
-            if (_messageProtocol is IDisposable disposableProtocol)
+            if (!IsRunning && _messageProtocol is IDisposable disposableProtocol)
             {
                 disposableProtocol.Dispose();
             }

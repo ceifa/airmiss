@@ -17,14 +17,14 @@ namespace Selene.Internal.Processor
             _hubReleaser = hubLifecycle.HubReleaser;
             HubInstance = hubLifecycle.Hub;
             ProcessorDescriptor = processorDescriptor;
-            PathParametersArguments = pathParametersArguments;
+            UriParametersArguments = pathParametersArguments;
         }
 
         public object HubInstance { get; }
 
         public IProcessorDescriptor ProcessorDescriptor { get; }
 
-        public IDictionary<string, string> PathParametersArguments { get; }
+        public IDictionary<string, string> UriParametersArguments { get; }
 
         public void Dispose()
         {

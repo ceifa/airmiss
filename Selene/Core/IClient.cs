@@ -2,6 +2,6 @@
 {
     public interface IClient
     {
-        string Identity { get; set; }
+        string Identity { get; }
     }
 }

@@ -8,7 +8,7 @@ namespace Selene.Tests.Protocol
 {
     public class DisposableProtocol : IMessageProtocol, IDisposable
     {
-        public bool IsDisposable { get; private set; }
+        public bool IsDisposed { get; private set; }
 
         public Task SendAsync<T>(string receiverIdentity, T message, CancellationToken cancellationToken)
         {
@@ -27,7 +27,7 @@ namespace Selene.Tests.Protocol
 
         public void Dispose()
         {
-            IsDisposable = true;
+            IsDisposed = true;
         }
     }
 }
