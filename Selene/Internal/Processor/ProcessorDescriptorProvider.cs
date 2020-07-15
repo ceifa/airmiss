@@ -2,7 +2,7 @@
 using System.Linq;
 using Selene.Core;
 using Selene.Exceptions;
-using Selene.Messaging;
+using Selene.Processor;
 
 namespace Selene.Internal.Processor
 {

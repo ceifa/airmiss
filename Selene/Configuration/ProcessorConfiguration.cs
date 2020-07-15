@@ -78,8 +78,8 @@ namespace Selene.Configuration
             {
                 var hubMethodRoute = hubMethodAttribute.Route;
 
-                var routes = hubTypeAttributes
-                    .Select(attribute => attribute.RoutePrefix + hubMethodRoute);
+                var routes = hubTypeAttributes.Length == 0 ? new[] { hubMethodRoute } :
+                    hubTypeAttributes.Select(attribute => attribute.RoutePrefix + hubMethodRoute);
 
                 Add(hubType, routes, hubMethodAttribute.Verb, processor, GetLocalMiddlewares(hubType, processor));
             }
@@ -99,7 +99,7 @@ namespace Selene.Configuration
             if (processor == null)
                 throw new ArgumentNullException(nameof(processor));
 
-            if (middlewares == null) 
+            if (middlewares == null)
                 throw new ArgumentNullException(nameof(middlewares));
 
             var descriptor = new ProcessorDescriptor(hubType, routes.Select(r => r.EnsureIsValid()), verb, processor);

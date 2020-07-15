@@ -1,4 +1,6 @@
-﻿namespace Selene.Messaging
+﻿using Selene.Processor;
+
+namespace Selene.Messaging
 {
     public class Message
     {

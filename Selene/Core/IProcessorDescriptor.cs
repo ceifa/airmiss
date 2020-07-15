@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using Selene.Messaging;
+using Selene.Processor;
 
 namespace Selene.Core
 {

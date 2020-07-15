@@ -1,5 +1,4 @@
-﻿using Selene.Messaging;
-using Selene.Processor;
+﻿using Selene.Processor;
 using System.Collections.Generic;
 using System.Linq;
 

@@ -1,4 +1,4 @@
-﻿namespace Selene.Messaging
+﻿namespace Selene.Processor
 {
     public enum Verb
     {

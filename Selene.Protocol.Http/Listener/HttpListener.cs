@@ -1,6 +1,7 @@
 ﻿using Selene.Core;
 using Selene.Exceptions;
 using Selene.Messaging;
+using Selene.Processor;
 using System;
 using System.Net;
 using System.Text;
@@ -71,7 +72,7 @@ namespace Selene.Protocol.Http.Listener
             }
             else
             {
-                var buffer = Encoding.ASCII.GetBytes(result.ToString());
+                var buffer = Encoding.UTF8.GetBytes(result.ToString());
 
                 context.Response.ContentType = "text/plain";
                 await context.Response.OutputStream.WriteAsync(buffer, cancellationToken);
@@ -96,7 +97,7 @@ namespace Selene.Protocol.Http.Listener
                 Content = context.Request.HasEntityBody ? await JsonSerializer.DeserializeAsync<object>(
                     context.Request.InputStream, cancellationToken: cancellationToken) : default,
 
-                Route = new Route(context.Request.Url)
+                Route = context.Request.Url
             };
         }
     }

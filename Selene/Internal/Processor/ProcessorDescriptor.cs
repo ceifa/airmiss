@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Selene.Core;
-using Selene.Messaging;
+using Selene.Processor;
 
 namespace Selene.Internal.Processor
 {

@@ -1,5 +1,5 @@
 ﻿using System;
-using Selene.Messaging;
+using Selene.Processor;
 
 namespace Selene.Exceptions
 {

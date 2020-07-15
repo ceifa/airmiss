@@ -5,7 +5,7 @@ using Selene.Exceptions;
 using Selene.Internal;
 using Selene.Internal.Routing;
 
-namespace Selene.Messaging
+namespace Selene.Processor
 {
     public struct Route
     {
@@ -47,6 +47,16 @@ namespace Selene.Messaging
         public static bool operator !=(Route route1, Route route2)
         {
             return !route1.Equals(route2);
+        }
+
+        public static implicit operator Route(string route)
+        {
+            return new Route(route);
+        }
+
+        public static implicit operator Route(Uri route)
+        {
+            return new Route(route);
         }
 
         public Route EnsureIsValid()
