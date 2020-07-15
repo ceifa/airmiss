@@ -3,6 +3,7 @@ using Selene.Exceptions;
 using Selene.Messaging;
 using System;
 using System.Net;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,9 +29,6 @@ namespace Selene.Protocol.Http.Listener
             while (!cancellationToken.IsCancellationRequested)
             {
                 var context = await _httpListener.GetContextAsync();
-                // TODO: Handle content type
-                context.Response.ContentType = "application/json";
-
                 var client = new HttpClient(default);
 
                 try
@@ -39,7 +37,7 @@ namespace Selene.Protocol.Http.Listener
                     var result = await messageProcessor.ProcessAsync<object>(client, message, cancellationToken);
                     if (result != null)
                     {
-                        await JsonSerializer.SerializeAsync(context.Response.OutputStream, result, null, cancellationToken);
+                        await HandleResultAsync(result, context, cancellationToken);
 
                         context.Response.StatusCode = (int)HttpStatusCode.OK;
                     }
@@ -62,6 +60,22 @@ namespace Selene.Protocol.Http.Listener
         {
             _httpListener.Stop();
             return Task.CompletedTask;
+        }
+
+        private async Task HandleResultAsync(object result, HttpListenerContext context, CancellationToken cancellationToken)
+        {
+            if (Convert.GetTypeCode(result) == TypeCode.Object)
+            {
+                context.Response.ContentType = "application/json";
+                await JsonSerializer.SerializeAsync(context.Response.OutputStream, result, default, cancellationToken);
+            }
+            else
+            {
+                var buffer = Encoding.ASCII.GetBytes(result.ToString());
+
+                context.Response.ContentType = "text/plain";
+                await context.Response.OutputStream.WriteAsync(buffer, cancellationToken);
+            }
         }
 
         private async Task<Message> GetMessageAsync(HttpListenerContext context, CancellationToken cancellationToken)
