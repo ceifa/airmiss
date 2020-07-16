@@ -7,9 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selene", "Selene\Selene.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selene.Tests", "Selene.Tests\Selene.Tests.csproj", "{00865361-9617-4A4C-A969-6BD177E408E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selene.TestConsole", "Selene.TestConsole\Selene.TestConsole.csproj", "{AE887A1A-5873-474A-AED8-A7088C9B6AC5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selene.TestConsole", "Selene.TestConsole\Selene.TestConsole.csproj", "{AE887A1A-5873-474A-AED8-A7088C9B6AC5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selene.Protocol.Http", "Selene.Protocol.Http\Selene.Protocol.Http.csproj", "{574FE1FB-D8C4-4D47-8F5D-7299D0E6967C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Selene.Protocol.Http", "Selene.Protocol.Http\Selene.Protocol.Http.csproj", "{574FE1FB-D8C4-4D47-8F5D-7299D0E6967C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Selene.Protocol.Websocket", "Selene.Protocol.Websocket\Selene.Protocol.Websocket.csproj", "{341742E2-10C2-4882-9928-6A11BB99B3EE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{574FE1FB-D8C4-4D47-8F5D-7299D0E6967C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{574FE1FB-D8C4-4D47-8F5D-7299D0E6967C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{574FE1FB-D8C4-4D47-8F5D-7299D0E6967C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{341742E2-10C2-4882-9928-6A11BB99B3EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{341742E2-10C2-4882-9928-6A11BB99B3EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{341742E2-10C2-4882-9928-6A11BB99B3EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{341742E2-10C2-4882-9928-6A11BB99B3EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

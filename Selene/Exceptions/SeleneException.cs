@@ -19,15 +19,12 @@ namespace Selene.Exceptions
             Code = code;
         }
 
-        public string SerializeJson()
+        public byte[] SerializeUtf8()
         {
-            return JsonSerializer.Serialize(new
+            return JsonSerializer.SerializeToUtf8Bytes(new
             {
                 Code,
                 Message
-            }, new JsonSerializerOptions()
-            {
-                IgnoreNullValues = true
             });
         }
 
