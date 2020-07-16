@@ -35,8 +35,8 @@ namespace Selene.Protocol.Http.Listener
                 try
                 {
                     var message = await GetMessageAsync(context, cancellationToken);
-                    var result = await messageProcessor.ProcessAsync<object>(client, message, cancellationToken);
-                    if (result != null)
+                    var result = await messageProcessor.ProcessAsync(client, message, cancellationToken);
+                    if (!result.IsEmpty)
                     {
                         await HandleResultAsync(result, context, cancellationToken);
 
@@ -63,12 +63,12 @@ namespace Selene.Protocol.Http.Listener
             return Task.CompletedTask;
         }
 
-        private async Task HandleResultAsync(object result, HttpListenerContext context, CancellationToken cancellationToken)
+        private async Task HandleResultAsync(ProcessorResult result, HttpListenerContext context, CancellationToken cancellationToken)
         {
-            if (Convert.GetTypeCode(result) == TypeCode.Object)
+            if (Convert.GetTypeCode(result.Result) == TypeCode.Object)
             {
                 context.Response.ContentType = "application/json";
-                await JsonSerializer.SerializeAsync(context.Response.OutputStream, result, default, cancellationToken);
+                await JsonSerializer.SerializeAsync(context.Response.OutputStream, result.Result, result.Type, default, cancellationToken);
             }
             else
             {
@@ -90,8 +90,7 @@ namespace Selene.Protocol.Http.Listener
                     "PUT" => Verb.Put,
                     "DELETE" => Verb.Delete,
                     "PATCH" => Verb.Patch,
-                    _ => throw new InvalidOperationException(
-                        $"Method {context.Request.HttpMethod} does not exists in HTTP protocol")
+                    _ => throw new InvalidOperationException($"Method {context.Request.HttpMethod} does not exists in HTTP protocol")
                 },
 
                 Content = context.Request.HasEntityBody ? await JsonSerializer.DeserializeAsync<object>(

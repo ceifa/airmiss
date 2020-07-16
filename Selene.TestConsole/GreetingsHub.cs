@@ -7,6 +7,11 @@ namespace Selene.TestConsole
     [ProcessorHub("greetings")]
     public class GreetingsHub
     {
+        public class User
+        {
+            public string Name { get; set; }
+        }
+
         [Processor("hello/{name}", Verb.Get)]
         public string HelloWorld(string name)
         {
@@ -14,9 +19,9 @@ namespace Selene.TestConsole
         }
 
         [Processor("about", Verb.Get)]
-        public object About()
+        public User About()
         {
-            return new
+            return new User
             {
                 Name = "John"
             };

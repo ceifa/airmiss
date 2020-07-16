@@ -1,5 +1,6 @@
 ﻿using Selene.Core;
 using Selene.Messaging;
+using Selene.Processor;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,9 +27,10 @@ namespace Selene.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task<T> ProcessAsync<T>(Message message)
+        public async Task<T> ProcessAsync<T>(Message message)
         {
-            return MessageProcessor.ProcessAsync<T>(null, message, default);
+            var result = await MessageProcessor.ProcessAsync(null, message, default);
+            return (T)result.Result;
         }
     }
 }

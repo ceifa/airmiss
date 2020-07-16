@@ -5,6 +5,7 @@ using Selene.Core;
 using Selene.Internal.Client;
 using Selene.Internal.Processor;
 using Selene.Messaging;
+using Selene.Processor;
 
 namespace Selene.Internal
 {
@@ -24,33 +25,29 @@ namespace Selene.Internal
             _processorInvoker = processorInvoker;
         }
 
-        public async Task<T> ProcessAsync<T>(IClient sender, Message message, CancellationToken cancellationToken)
+        public async Task<ProcessorResult> ProcessAsync(IClient sender, Message message, CancellationToken cancellationToken)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
 
             using var processorContext = _processorContextProvider.GetProcessorContext(message);
             var context =_contextProvider.GetContext(sender, processorContext, message, cancellationToken);
+
+            var resultType = processorContext.ProcessorDescriptor.ProcessorMethod.ReturnType;
             var result = await _processorInvoker.InvokeAsync(processorContext, context, cancellationToken);
 
-            return await HandleResultAsync<T>(result);
-        }
-
-        private async Task<T> HandleResultAsync<T>(object result)
-        {
-            switch (result)
+            while (result is Task<object> awaitableResult)
             {
-                case Task<T> genericTask:
-                    return await genericTask;
-                case Task task:
-                    await task;
-                    return default!;
-                case T resultObject:
-                    return resultObject;
-                default:
-                    throw new InvalidCastException(
-                        $"Value returned from message processor is not of type {typeof(T).Name}");
+                result = await awaitableResult;
             }
+
+            if (result is Task awaitable)
+            {
+                await awaitable;
+                return ProcessorResult.Empty;
+            }
+
+            return new ProcessorResult(resultType, result);
         }
     }
 }

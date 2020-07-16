@@ -37,7 +37,7 @@ namespace Selene.Tests.Processor
                 .GetRunner();
             await runner.StartAsync();
 
-            var quantity = 3;
+            const int quantity = 3;
             int actual = 0;
 
             for (int i = 0; i < quantity; i++)
@@ -68,7 +68,26 @@ namespace Selene.Tests.Processor
                 Verb = Verb.Get
             });
 
-            Assert.Equal(DummyHub.Dummy2Return, result);
+            Assert.Equal(DummyHub.DummyReturn, result);
+        }
+
+        [Fact]
+        public async Task ShouldAwaitAnAsyncProcessorProcessor()
+        {
+            var protocol = new DummyProtocol();
+            var runner = new SeleneConfiguration()
+                .Processor.AddHub<DummyHub>()
+                .Protocol.Add(protocol)
+                .GetRunner();
+            await runner.StartAsync();
+
+            var result = await protocol.ProcessAsync<string>(new Message
+            {
+                Route = nameof(DummyHub.DummyAsync),
+                Verb = Verb.Get
+            });
+
+            Assert.Equal(DummyHub.DummyReturn, result);
         }
     }
 }

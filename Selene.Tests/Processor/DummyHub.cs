@@ -1,10 +1,11 @@
 ﻿using Selene.Processor;
+using System.Threading.Tasks;
 
 namespace Selene.Tests.Processor
 {
     public class DummyHub
     {
-        public static string Dummy2Return => "Hi";
+        public static string DummyReturn => "Hi";
 
         public int Called { get; private set; }
 
@@ -17,7 +18,14 @@ namespace Selene.Tests.Processor
         [Processor(nameof(Dummy2), Verb.Get)]
         public string Dummy2()
         {
-            return Dummy2Return;
+            return DummyReturn;
+        }
+
+        [Processor(nameof(DummyAsync), Verb.Get)]
+        public async Task<string> DummyAsync()
+        {
+            await Task.Delay(1000);
+            return DummyReturn;
         }
     }
 }

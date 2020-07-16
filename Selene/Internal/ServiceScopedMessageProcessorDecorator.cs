@@ -2,6 +2,7 @@
 using Selene.Core;
 using Selene.Internal.TypeActivator;
 using Selene.Messaging;
+using Selene.Processor;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,13 +21,13 @@ namespace Selene.Internal.Processor
             _clientServiceProvider = clientServiceProvider;
         }
 
-        public Task<T> ProcessAsync<T>(IClient sender, Message message, CancellationToken cancellationToken)
+        public Task<ProcessorResult> ProcessAsync(IClient sender, Message message, CancellationToken cancellationToken)
         {
             using var scopedServiceProvider = _clientServiceProvider.ServiceProvider.CreateScope();
             var scopedMessageProcessor = (IMessageProcessor)scopedServiceProvider
                 .ServiceProvider.GetRequiredService(_messageProcessor.GetType());
 
-            return scopedMessageProcessor.ProcessAsync<T>(sender, message, cancellationToken);
+            return scopedMessageProcessor.ProcessAsync(sender, message, cancellationToken);
         }
     }
 }
