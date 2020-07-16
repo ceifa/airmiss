@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using Selene.Core;
 using Selene.Internal.Processor;
-using Selene.Messaging;
 using Selene.Processor;
 
 namespace Selene.Configuration

@@ -26,7 +26,7 @@ namespace Selene.Tests.Protocol
             return Task.CompletedTask;
         }
 
-        public Task ProcessAsync<T>(Message message)
+        public Task<T> ProcessAsync<T>(Message message)
         {
             return MessageProcessor.ProcessAsync<T>(null, message, default);
         }

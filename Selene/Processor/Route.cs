@@ -31,22 +31,25 @@ namespace Selene.Processor
             if (route1._routeTokens.Length != route2._routeTokens.Length)
                 return false;
 
-            return route1._routeTokens.Where((t, i) => t.VariableName == null && t != route2._routeTokens[i]).Any();
+            for (int i = 0; i < route1._routeTokens.Length; i++)
+            {
+                if (route1._routeTokens[i].IsVariable != route2._routeTokens[i].IsVariable)
+                {
+                    return false;
+                }
+
+                if (route1._routeTokens[i].ToString() != route2._routeTokens[i].ToString())
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public static Route operator +(Route route1, Route route2)
         {
             return route1.Combine(route2);
-        }
-
-        public static bool operator ==(Route route1, Route route2)
-        {
-            return route1.Equals(route2);
-        }
-
-        public static bool operator !=(Route route1, Route route2)
-        {
-            return !route1.Equals(route2);
         }
 
         public static implicit operator Route(string route)

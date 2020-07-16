@@ -40,6 +40,6 @@ namespace Selene
             return provider.GetRequiredService<SeleneRunner>();
         }
 
-        private void Add<T>(T instance) where T : class => _serviceCollection.TryAddSingleton(instance);
+        private void Add<T>(T instance) where T : class => _serviceCollection.AddSingleton(instance);
     }
 }
