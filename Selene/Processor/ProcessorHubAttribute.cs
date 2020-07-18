@@ -1,5 +1,4 @@
 ﻿using System;
-using Selene.Messaging;
 
 namespace Selene.Processor
 {

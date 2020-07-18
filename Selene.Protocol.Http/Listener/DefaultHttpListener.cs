@@ -34,6 +34,8 @@ namespace Selene.Protocol.Http.Listener
 
                 try
                 {
+                    context.Response.ContentEncoding = Encoding.UTF8;
+
                     var message = await GetMessageAsync(context, cancellationToken);
                     var result = await messageProcessor.ProcessAsync(client, message, cancellationToken);
                     if (!result.IsEmpty)
@@ -67,14 +69,14 @@ namespace Selene.Protocol.Http.Listener
         {
             if (Convert.GetTypeCode(result.Result) == TypeCode.Object)
             {
-                context.Response.ContentType = "application/json";
+                context.Response.ContentType = "application/json; charset=utf-8";
                 await JsonSerializer.SerializeAsync(context.Response.OutputStream, result.Result, result.Type, default, cancellationToken);
             }
             else
             {
-                var buffer = Encoding.UTF8.GetBytes(result.ToString());
+                var buffer = Encoding.UTF8.GetBytes(result.Result.ToString());
 
-                context.Response.ContentType = "text/plain";
+                context.Response.ContentType = "text/plain; charset=utf-8";
                 await context.Response.OutputStream.WriteAsync(buffer, cancellationToken);
             }
         }
