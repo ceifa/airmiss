@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Selene.Exceptions;
 using Selene.Internal;
@@ -26,19 +27,14 @@ namespace Selene.Processor
             EnsureIsValid();
         }
 
-        public static bool Match(Route route1, Route route2)
+        public static bool Match(Route source, Route target)
         {
-            if (route1._routeTokens.Length != route2._routeTokens.Length)
+            if (source._routeTokens.Length != target._routeTokens.Length)
                 return false;
 
-            for (int i = 0; i < route1._routeTokens.Length; i++)
+            for (int i = 0; i < source._routeTokens.Length; i++)
             {
-                if (route1._routeTokens[i].IsVariable != route2._routeTokens[i].IsVariable)
-                {
-                    return false;
-                }
-
-                if (route1._routeTokens[i].ToString() != route2._routeTokens[i].ToString())
+                if (source._routeTokens[i].ToString() != target._routeTokens[i].ToString() && !source._routeTokens[i].IsVariable)
                 {
                     return false;
                 }

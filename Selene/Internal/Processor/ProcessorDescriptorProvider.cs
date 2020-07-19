@@ -23,7 +23,7 @@ namespace Selene.Internal.Processor
 
             var match = _messageProcessors[verb]
                 .SelectMany(m => m.Routes.Select(r => new {Route = r, Descriptor = m}))
-                .FirstOrDefault(m => Route.Match(route, m.Route));
+                .FirstOrDefault(m => Route.Match(m.Route, route));
 
             if (match == default)
                 throw new ProcessorNotFoundException($"No processor was found with route '{route}' and verb '{verb}'");
