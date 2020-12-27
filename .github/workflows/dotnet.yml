@@ -41,5 +41,5 @@ jobs:
     - name: publish airmiss websocket
       uses: rohith/publish-nuget@v2
       with:
-        PROJECT_FILE_PATH: Airmiss.Protocol.Http/Airmiss.Protocol.Websocket.csproj
+        PROJECT_FILE_PATH: Airmiss.Protocol.Websocket/Airmiss.Protocol.Websocket.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
