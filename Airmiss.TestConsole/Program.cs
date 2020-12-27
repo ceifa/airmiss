@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Airmiss.Protocol.Http;
+using Airmiss.Protocol.Websocket;
 
 namespace Airmiss.TestConsole
 {
@@ -11,6 +12,7 @@ namespace Airmiss.TestConsole
             var runner = new AirmissConfiguration()
                 .Processor.AddCurrentAssembly()
                 .Protocol.Http("http://localhost:1337/")
+                .Protocol.Websocket("http://localhost:1338/")
                 .GetRunner();
 
             await runner.StartAsync();

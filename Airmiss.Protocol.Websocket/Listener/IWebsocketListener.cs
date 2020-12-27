@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Airmiss.Protocol.Websocket.Listener
 {
-    public interface IWebsocketListener
+    internal interface IWebsocketListener
     {
         Task Start(IMessageProcessor messageProcessor, CancellationToken cancellationToken);
 

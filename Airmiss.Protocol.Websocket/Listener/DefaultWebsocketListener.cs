@@ -1,16 +1,19 @@
 ﻿using Airmiss.Core;
 using Airmiss.Exceptions;
 using Airmiss.Messaging;
+using Airmiss.Processor;
 using System;
 using System.Net;
 using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
+using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Airmiss.Protocol.Websocket.Listener
 {
-    public class DefaultWebsocketListener : IWebsocketListener
+    internal class DefaultWebsocketListener : IWebsocketListener
     {
         private readonly HttpListener _httpListener;
 
@@ -34,7 +37,7 @@ namespace Airmiss.Protocol.Websocket.Listener
                     HttpListenerWebSocketContext webSocketContext = await context.AcceptWebSocketAsync(null);
                     WebSocket webSocket = webSocketContext.WebSocket;
 
-                    var client = new WebsocketClient(Guid.NewGuid().ToString());
+                    var client = new WebsocketClient(Guid.NewGuid().ToString(), webSocket);
 
                     const int maxMessageSize = 1024;
                     byte[] receiveBuffer = new byte[maxMessageSize];
@@ -43,7 +46,7 @@ namespace Airmiss.Protocol.Websocket.Listener
                     {
                         try
                         {
-                            WebSocketReceiveResult receiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(receiveBuffer), cancellationToken);
+                            WebSocketReceiveResult receiveResult = await webSocket.ReceiveAsync(new ArraySegment<byte>(receiveBuffer, default, maxMessageSize), cancellationToken);
 
                             if (receiveResult.MessageType == WebSocketMessageType.Close)
                             {
@@ -69,13 +72,10 @@ namespace Airmiss.Protocol.Websocket.Listener
                                     count += receiveResult.Count;
                                 }
 
-                                var message = GetMessage(receiveBuffer);
+                                var message = GetMessage(receiveBuffer, count);
                                 var result = await messageProcessor.ProcessAsync(client, message, cancellationToken);
 
-                                var outputBytes = JsonSerializer.SerializeToUtf8Bytes(result.Result, result.Type, default);
-                                var outputBuffer = new ArraySegment<byte>(outputBytes);
-
-                                await webSocket.SendAsync(outputBuffer, WebSocketMessageType.Text, true, cancellationToken);
+                                await client.SendAsync(message.CorrelationId, result.Type, result.Result, cancellationToken);
                             }
                         }
                         catch (Exception ex)
@@ -101,9 +101,36 @@ namespace Airmiss.Protocol.Websocket.Listener
             return Task.CompletedTask;
         }
 
-        private Message GetMessage(byte[] buffer)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Message GetMessage(byte[] buffer, int endOfStream)
         {
-            return JsonSerializer.Deserialize<Message>(buffer);
+            var span = buffer.AsSpan(default, endOfStream);
+
+            int current = default;
+
+            var correlationId = Encoding.UTF8.GetString(GetMessagePart(span, ref current));
+            var route = Encoding.UTF8.GetString(GetMessagePart(span, ref current));
+            var verb = Enum.Parse<Verb>(Encoding.UTF8.GetString(GetMessagePart(span, ref current)), true);
+            var content = span[current..];
+
+            return new Message
+            {
+                CorrelationId = correlationId,
+                Route = route,
+                Verb = verb,
+                Content = content.Length > 0 ? JsonSerializer.Deserialize<object>(content) : default
+            };
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static Span<byte> GetMessagePart(Span<byte> message, ref int currentPointer)
+        {
+            message = message[currentPointer..];
+
+            var idx = message.IndexOf(WebsocketProtocol.BufferDelimiter);
+            currentPointer += idx + 1;
+
+            return message[0..idx];
         }
     }
 }

@@ -6,6 +6,6 @@ namespace Airmiss.Core
 {
     public interface IMiddleware
     {
-        Task<object> InvokeAsync(IContext context, Func<Task<object>> next, CancellationToken cancellationToken);
+        Task<object?> InvokeAsync(IContext context, Func<Task<object?>> next, CancellationToken cancellationToken);
     }
 }

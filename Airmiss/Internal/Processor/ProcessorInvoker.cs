@@ -13,9 +13,9 @@ namespace Airmiss.Internal.Processor
             _middleware = middleware;
         }
 
-        public Task<object> InvokeAsync(ProcessorContext processorContext, IContext context, CancellationToken cancellationToken)
+        public Task<object?> InvokeAsync(ProcessorContext processorContext, IContext context, CancellationToken cancellationToken)
         {
-            Task<object> ProcessorInvoke() => Task.FromResult(
+            Task<object?> ProcessorInvoke() => Task.FromResult(
                 processorContext.ProcessorDescriptor.ProcessorMethod.Invoke(processorContext.HubInstance, context.Arguments));
 
             return _middleware.InvokeAsync(context, ProcessorInvoke, cancellationToken);

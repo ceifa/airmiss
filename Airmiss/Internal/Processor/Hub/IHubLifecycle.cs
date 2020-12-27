@@ -2,7 +2,7 @@
 
 namespace Airmiss.Internal.Processor.Hub
 {
-    public interface IHubLifecycle
+    internal interface IHubLifecycle
     {
         object Hub { get; }
 

@@ -4,7 +4,7 @@ namespace Airmiss.Processor
 {
     public struct ProcessorResult
     {
-        public ProcessorResult(Type type, object result)
+        public ProcessorResult(Type type, object? result)
         {
             Type = type;
             Result = result;
@@ -12,7 +12,7 @@ namespace Airmiss.Processor
 
         public Type Type { get; }
 
-        public object Result { get; }
+        public object? Result { get; }
 
         public bool IsEmpty => Type == null && Result == null;
 

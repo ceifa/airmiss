@@ -1,25 +1,35 @@
 ﻿using Airmiss.Core;
 using Airmiss.Messaging;
+using Airmiss.Protocol.Websocket.Listener;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace Airmiss.Protocol.Websocket
 {
-    public class WebsocketProtocol : IMessageProtocol
+    internal class WebsocketProtocol : IMessageProtocol
     {
+        internal const byte BufferDelimiter = (byte)';';
+
+        private readonly IWebsocketListener _websocketListener;
+
+        public WebsocketProtocol(IWebsocketListener websocketListener)
+        {
+            _websocketListener = websocketListener;
+        }
+
         public Task SendAsync<T>(string receiverIdentity, T message, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return Task.CompletedTask;
         }
 
         public Task StartAsync(IMessageProcessor messageProcessor, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return _websocketListener.Start(messageProcessor, cancellationToken);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            return _websocketListener.Stop(cancellationToken);
         }
     }
 }

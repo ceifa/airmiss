@@ -72,7 +72,7 @@ namespace Airmiss.Tests.Processor
         }
 
         [Fact]
-        public async Task ShouldAwaitAnAsyncProcessorProcessor()
+        public async Task ShouldAwaitAnAsyncProcessor()
         {
             var protocol = new DummyProtocol();
             var runner = new AirmissConfiguration()

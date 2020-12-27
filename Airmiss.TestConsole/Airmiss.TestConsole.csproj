@@ -8,6 +8,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Airmiss.Protocol.Http\Airmiss.Protocol.Http.csproj" />
+		<ProjectReference Include="..\Airmiss.Protocol.Websocket\Airmiss.Protocol.Websocket.csproj" />
 		<ProjectReference Include="..\Airmiss\Airmiss.csproj" />
 	</ItemGroup>
 

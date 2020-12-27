@@ -4,6 +4,7 @@ using Airmiss.Messaging;
 using Airmiss.Processor;
 using System;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -81,6 +82,7 @@ namespace Airmiss.Protocol.Http.Listener
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private async Task<Message> GetMessageAsync(HttpListenerContext context, CancellationToken cancellationToken)
         {
             return new Message

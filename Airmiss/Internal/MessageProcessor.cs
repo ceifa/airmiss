@@ -36,15 +36,19 @@ namespace Airmiss.Internal
             var resultType = processorContext.ProcessorDescriptor.ProcessorMethod.ReturnType;
             var result = await _processorInvoker.InvokeAsync(processorContext, context, cancellationToken);
 
-            while (result is Task<object> awaitableResult)
-            {
-                result = await awaitableResult;
-            }
-
             if (result is Task awaitable)
             {
                 await awaitable;
-                return ProcessorResult.Empty;
+
+                var taskType = result.GetType();
+
+                if (!taskType.IsGenericType)
+                {
+                    return ProcessorResult.Empty;
+                }
+
+                resultType = taskType.GetGenericArguments()[0];
+                result = taskType.GetProperty(nameof(Task<object>.Result))?.GetValue(awaitable);
             }
 
             return new ProcessorResult(resultType, result);
