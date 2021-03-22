@@ -17,6 +17,11 @@ namespace Airmiss.Internal.Protocol
             _messageProtocols = messageProtocolsDescriptors.Select(d => d.MessageProtocol);
         }
 
+        public void Dispose()
+        {
+            foreach (var disposable in _messageProtocols.OfType<IDisposable>()) disposable.Dispose();
+        }
+
         public Task SendAsync<T>(string receiverIdentity, T message, CancellationToken cancellationToken)
         {
             return ExecuteAggregatedAsync(messageProtocol =>
@@ -36,14 +41,6 @@ namespace Airmiss.Internal.Protocol
         private Task ExecuteAggregatedAsync(Func<IMessageProtocol, Task> func)
         {
             return Task.WhenAll(_messageProtocols.Select(func));
-        }
-
-        public void Dispose()
-        {
-            foreach (var disposable in _messageProtocols.OfType<IDisposable>())
-            {
-                disposable.Dispose();
-            }
         }
     }
 }

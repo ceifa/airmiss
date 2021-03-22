@@ -1,5 +1,5 @@
-﻿using Airmiss.Processor;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Airmiss.Processor;
 
 namespace Airmiss.Tests.Processor
 {

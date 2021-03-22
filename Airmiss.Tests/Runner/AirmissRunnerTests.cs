@@ -1,13 +1,12 @@
-﻿using Airmiss.Tests.Protocol;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using Airmiss.Tests.Protocol;
 using Xunit;
 
 namespace Airmiss.Tests.Runner
 {
     public class AirmissRunnerTests
     {
-
         [Fact]
         public async Task AirmissRunnerShouldBeRunningAfterStart()
         {
@@ -37,10 +36,7 @@ namespace Airmiss.Tests.Runner
             var runner = new AirmissConfiguration()
                 .GetRunner();
 
-            await Assert.ThrowsAsync<InvalidOperationException>(async () =>
-            {
-                await runner.StopAsync();
-            });
+            await Assert.ThrowsAsync<InvalidOperationException>(async () => await runner.StopAsync());
             await Assert.ThrowsAsync<InvalidOperationException>(async () =>
             {
                 await runner.StartAsync();

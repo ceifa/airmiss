@@ -1,8 +1,8 @@
-﻿using Airmiss.Core;
-using Airmiss.Messaging;
-using Airmiss.Processor;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Airmiss.Core;
+using Airmiss.Messaging;
 
 namespace Airmiss.Tests.Protocol
 {
@@ -12,7 +12,9 @@ namespace Airmiss.Tests.Protocol
 
         public Task SendAsync<T>(string receiverIdentity, T message, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+#pragma warning disable RCS1079 // Throwing of new NotImplementedException.
+            throw new NotImplementedException();
+#pragma warning restore RCS1079 // Throwing of new NotImplementedException.
         }
 
         public Task StartAsync(IMessageProcessor messageProcessor, CancellationToken cancellationToken)
@@ -30,7 +32,7 @@ namespace Airmiss.Tests.Protocol
         public async Task<T> ProcessAsync<T>(Message message)
         {
             var result = await MessageProcessor.ProcessAsync(null, message, default);
-            return (T)result.Result;
+            return (T) result.Result;
         }
     }
 }

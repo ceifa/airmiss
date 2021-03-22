@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Airmiss.Internal.TypeActivator;
-using System;
+﻿using System;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Airmiss.Internal.Processor.Hub
+namespace Airmiss.Internal.TypeActivator
 {
     internal class ServiceBasedTypeActivator : ITypeActivator
     {
@@ -23,6 +22,7 @@ namespace Airmiss.Internal.Processor.Hub
 
         public void Release(object instance)
         {
+            // Method intentionally left empty.
         }
     }
 }

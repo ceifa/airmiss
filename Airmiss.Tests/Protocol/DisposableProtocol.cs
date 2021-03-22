@@ -1,14 +1,19 @@
-﻿using Airmiss.Core;
-using Airmiss.Messaging;
-using System;
+﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Airmiss.Core;
+using Airmiss.Messaging;
 
 namespace Airmiss.Tests.Protocol
 {
-    public class DisposableProtocol : IMessageProtocol, IDisposable
+    public sealed class DisposableProtocol : IMessageProtocol, IDisposable
     {
         public bool IsDisposed { get; private set; }
+
+        public void Dispose()
+        {
+            IsDisposed = true;
+        }
 
         public Task SendAsync<T>(string receiverIdentity, T message, CancellationToken cancellationToken)
         {
@@ -23,11 +28,6 @@ namespace Airmiss.Tests.Protocol
         public Task StopAsync(CancellationToken cancellationToken)
         {
             return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            IsDisposed = true;
         }
     }
 }

@@ -1,14 +1,15 @@
-﻿using Airmiss.Core;
-using Airmiss.Exceptions;
-using Airmiss.Messaging;
-using Airmiss.Processor;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Airmiss.Core;
+using Airmiss.Exceptions;
+using Airmiss.Messaging;
+using Airmiss.Processor;
 
 namespace Airmiss.Protocol.Http.Listener
 {
@@ -16,7 +17,7 @@ namespace Airmiss.Protocol.Http.Listener
     {
         private readonly HttpListener _httpListener;
 
-        public DefaultHttpListener(string[] addresses)
+        public DefaultHttpListener(IEnumerable<string> addresses)
         {
             _httpListener = new HttpListener();
 
@@ -43,7 +44,7 @@ namespace Airmiss.Protocol.Http.Listener
                     {
                         await HandleResultAsync(result, context, cancellationToken);
 
-                        context.Response.StatusCode = (int)HttpStatusCode.OK;
+                        context.Response.StatusCode = (int) HttpStatusCode.OK;
                     }
                 }
                 catch (Exception ex)
@@ -66,12 +67,14 @@ namespace Airmiss.Protocol.Http.Listener
             return Task.CompletedTask;
         }
 
-        private async Task HandleResultAsync(ProcessorResult result, HttpListenerContext context, CancellationToken cancellationToken)
+        private static async Task HandleResultAsync(ProcessorResult result, HttpListenerContext context,
+            CancellationToken cancellationToken)
         {
             if (Convert.GetTypeCode(result.Result) == TypeCode.Object)
             {
                 context.Response.ContentType = "application/json; charset=utf-8";
-                await JsonSerializer.SerializeAsync(context.Response.OutputStream, result.Result, result.Type, default, cancellationToken);
+                await JsonSerializer.SerializeAsync(context.Response.OutputStream, result.Result, result.Type, default,
+                    cancellationToken);
             }
             else
             {
@@ -83,9 +86,10 @@ namespace Airmiss.Protocol.Http.Listener
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private async Task<Message> GetMessageAsync(HttpListenerContext context, CancellationToken cancellationToken)
+        private static async Task<Message> GetMessageAsync(HttpListenerContext context,
+            CancellationToken cancellationToken)
         {
-            return new Message
+            return new()
             {
                 Verb = context.Request.HttpMethod switch
                 {
@@ -94,11 +98,14 @@ namespace Airmiss.Protocol.Http.Listener
                     "PUT" => Verb.Put,
                     "DELETE" => Verb.Delete,
                     "PATCH" => Verb.Patch,
-                    _ => throw new InvalidOperationException($"Method {context.Request.HttpMethod} does not exists in HTTP protocol")
+                    _ => throw new InvalidOperationException(
+                        $"Method {context.Request.HttpMethod} does not exists in HTTP protocol")
                 },
 
-                Content = context.Request.HasEntityBody ? await JsonSerializer.DeserializeAsync<object>(
-                    context.Request.InputStream, cancellationToken: cancellationToken) : default,
+                Content = context.Request.HasEntityBody
+                    ? await JsonSerializer.DeserializeAsync<object>(
+                        context.Request.InputStream, cancellationToken: cancellationToken)
+                    : default,
 
                 Route = context.Request.Url
             };

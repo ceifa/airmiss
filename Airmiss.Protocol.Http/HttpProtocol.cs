@@ -1,8 +1,8 @@
-﻿using Airmiss.Core;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Airmiss.Core;
 using Airmiss.Messaging;
 using Airmiss.Protocol.Http.Listener;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Airmiss.Protocol.Http
 {

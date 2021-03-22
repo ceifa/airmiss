@@ -1,5 +1,6 @@
 ﻿using System;
 using Airmiss.Core;
+using Airmiss.Internal.TypeActivator;
 
 namespace Airmiss.Internal.Processor.Hub
 {
@@ -18,6 +19,11 @@ namespace Airmiss.Internal.Processor.Hub
                 throw new ArgumentNullException(nameof(processorDescriptor));
 
             var instance = _typeActivator.GetInstance(processorDescriptor.HubType);
+            if (instance is null)
+            {
+                throw new TypeLoadException($"Could not get instance for type '{processorDescriptor.HubType.FullName}'");
+            }
+
             return new HubLifecycle(instance, () => _typeActivator.Release(instance));
         }
     }

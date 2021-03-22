@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace Airmiss.Exceptions
 {
+#pragma warning disable
     public class AirmissException : Exception
+#pragma warning restore
     {
-        public int Code { get; }
-
         public AirmissException(int code, string message) : base(message)
         {
             Code = code;
@@ -18,6 +18,8 @@ namespace Airmiss.Exceptions
         {
             Code = code;
         }
+
+        public int Code { get; }
 
         public byte[] SerializeUtf8()
         {

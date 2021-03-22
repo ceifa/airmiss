@@ -12,7 +12,8 @@ namespace Airmiss.Configuration
         internal ProtocolConfiguration(AirmissConfiguration AirmissConfiguration,
             Action<IMessageProtocolDescriptor> addMessageProtocol)
         {
-            _AirmissConfiguration = AirmissConfiguration ?? throw new ArgumentNullException(nameof(AirmissConfiguration));
+            _AirmissConfiguration =
+                AirmissConfiguration ?? throw new ArgumentNullException(nameof(AirmissConfiguration));
             _addProtocol = addMessageProtocol ?? throw new ArgumentNullException(nameof(addMessageProtocol));
         }
 

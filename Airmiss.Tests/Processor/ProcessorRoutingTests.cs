@@ -1,7 +1,7 @@
-﻿using Airmiss.Messaging;
+﻿using System.Threading.Tasks;
+using Airmiss.Messaging;
 using Airmiss.Processor;
 using Airmiss.Tests.Protocol;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Airmiss.Tests.Processor
@@ -38,9 +38,9 @@ namespace Airmiss.Tests.Processor
             await runner.StartAsync();
 
             const int quantity = 3;
-            int actual = 0;
+            var actual = 0;
 
-            for (int i = 0; i < quantity; i++)
+            for (var i = 0; i < quantity; i++)
             {
                 actual = await protocol.ProcessAsync<int>(new Message
                 {

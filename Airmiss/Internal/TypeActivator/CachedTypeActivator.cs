@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
 
-namespace Airmiss.Internal
+namespace Airmiss.Internal.TypeActivator
 {
     internal class CachedTypeActivator : ITypeActivator
     {
         private readonly Func<Type, object?> _createInstance = Activator.CreateInstance;
-        private readonly ConcurrentDictionary<Type, object?> _typeCache = new ConcurrentDictionary<Type, object?>();
+        private readonly ConcurrentDictionary<Type, object?> _typeCache = new();
 
         public object? GetInstance(Type type)
         {

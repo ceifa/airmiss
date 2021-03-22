@@ -18,11 +18,12 @@ namespace Airmiss.Tests.Configuration
         [Fact]
         public void AirmissRunnerShouldNotReferenceToItsConfigurationAfterBeingCreated()
         {
-            (AirmissRunner, WeakReference) CreateRunner()
+            static (AirmissRunner, WeakReference) CreateRunner()
             {
-                var AirmissConfiguration = new AirmissConfiguration();
-                return (AirmissConfiguration.GetRunner(), new WeakReference(AirmissConfiguration));
+                var airmissConfiguration = new AirmissConfiguration();
+                return (airmissConfiguration.GetRunner(), new WeakReference(airmissConfiguration));
             }
+
             var (runner, wr) = CreateRunner();
 
 #pragma warning disable S1215 // "GC.Collect" should not be called

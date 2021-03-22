@@ -4,6 +4,7 @@
 		<TargetFramework>net5.0</TargetFramework>
 		<LangVersion>9.0</LangVersion>
 		<Version>1.0.1</Version>
+		<NoWarn>RCS1090</NoWarn>
 	</PropertyGroup>
 
 	<ItemGroup>

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Airmiss.Exceptions;
 using Airmiss.Internal;
-using Airmiss.Internal.Routing;
 
 namespace Airmiss.Processor
 {
-    public struct Route
+    public readonly struct Route
     {
         internal const char RouteSeparator = '/';
 
@@ -31,30 +30,9 @@ namespace Airmiss.Processor
             if (source._routeTokens.Length != target._routeTokens.Length)
                 return false;
 
-            for (int i = 0; i < source._routeTokens.Length; i++)
-            {
-                if (source._routeTokens[i].ToString() != target._routeTokens[i].ToString() && !source._routeTokens[i].IsVariable)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        public static Route operator +(Route route1, Route route2)
-        {
-            return route1.Combine(route2);
-        }
-
-        public static implicit operator Route(string route)
-        {
-            return new Route(route);
-        }
-
-        public static implicit operator Route(Uri route)
-        {
-            return new Route(route);
+            return !source._routeTokens
+                .Where((t, i) => t.ToString() != target._routeTokens[i].ToString() && !t.IsVariable)
+                .Any();
         }
 
         public Route EnsureIsValid()
@@ -73,7 +51,7 @@ namespace Airmiss.Processor
 
         public Route Combine(Route target)
         {
-            return new Route($"{this}{RouteSeparator}{target}");
+            return new($"{this}{RouteSeparator}{target}");
         }
 
         public Dictionary<string, string> GetVariableValues(Route populatedRoute)
@@ -88,10 +66,7 @@ namespace Airmiss.Processor
 
         public override bool Equals(object? obj)
         {
-            if (obj is Route route)
-            {
-                return _route.Equals(route._route);
-            }
+            if (obj is Route route) return _route.Equals(route._route);
 
             return false;
         }
@@ -110,6 +85,31 @@ namespace Airmiss.Processor
         {
             return route.Split(RouteSeparator, StringSplitOptions.RemoveEmptyEntries)
                 .Select(t => new RouteToken(t)).ToArray();
+        }
+
+        public static bool operator ==(Route left, Route right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(Route left, Route right)
+        {
+            return !left.Equals(right);
+        }
+
+        public static Route operator +(Route route1, Route route2)
+        {
+            return route1.Combine(route2);
+        }
+
+        public static implicit operator Route(string route)
+        {
+            return new(route);
+        }
+
+        public static implicit operator Route(Uri route)
+        {
+            return new(route);
         }
     }
 }

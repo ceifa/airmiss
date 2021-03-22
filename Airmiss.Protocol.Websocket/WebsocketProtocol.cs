@@ -1,14 +1,14 @@
-﻿using Airmiss.Core;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Airmiss.Core;
 using Airmiss.Messaging;
 using Airmiss.Protocol.Websocket.Listener;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Airmiss.Protocol.Websocket
 {
     internal class WebsocketProtocol : IMessageProtocol
     {
-        internal const byte BufferDelimiter = (byte)';';
+        internal const byte BufferDelimiter = (byte) ';';
 
         private readonly IWebsocketListener _websocketListener;
 

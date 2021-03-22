@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Airmiss.Internal
+namespace Airmiss.Internal.TypeActivator
 {
     internal interface ITypeActivator
     {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Airmiss.Core;
+using Airmiss.Internal.TypeActivator;
 
 namespace Airmiss.Internal.Middleware
 {
@@ -12,19 +13,20 @@ namespace Airmiss.Internal.Middleware
         private readonly IEnumerable<MiddlewareDescriptor> _middlewaresDescriptors;
         private readonly ITypeActivator _typeActivator;
 
-        public AggregateMiddleware(IEnumerable<MiddlewareDescriptor> middlewaresDescriptors, ITypeActivator typeActivator)
+        public AggregateMiddleware(IEnumerable<MiddlewareDescriptor> middlewaresDescriptors,
+            ITypeActivator typeActivator)
         {
             _middlewaresDescriptors = middlewaresDescriptors;
             _typeActivator = typeActivator;
         }
 
-        public Task<object> InvokeAsync(IContext context, Func<Task<object>> next, CancellationToken cancellationToken)
+        public Task<object?> InvokeAsync(IContext context, Func<Task<object?>> next, CancellationToken cancellationToken)
         {
             var compiledMiddleware = CompileMiddleware(context, next, cancellationToken);
             return compiledMiddleware.Invoke();
         }
 
-        private Func<Task<object>> CompileMiddleware(IContext context, Func<Task<object>> next, CancellationToken cancellationToken)
+        private Func<Task<object?>> CompileMiddleware(IContext context, Func<Task<object?>> next, CancellationToken cancellationToken)
         {
             return _middlewaresDescriptors
                 .Where(m => m.ShouldRun(context.Processor))
@@ -34,7 +36,11 @@ namespace Airmiss.Internal.Middleware
                 {
                     return () =>
                     {
-                        var middleware = (IMiddleware)_typeActivator.GetInstance(current);
+                        if (_typeActivator.GetInstance(current) is not IMiddleware middleware)
+                        {
+                            throw new TypeLoadException($"Could not get instance for type '{current.FullName}'");
+                        }
+
                         try
                         {
                             return middleware.InvokeAsync(context, previous, cancellationToken);

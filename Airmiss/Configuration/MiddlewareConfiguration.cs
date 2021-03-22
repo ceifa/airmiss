@@ -13,11 +13,13 @@ namespace Airmiss.Configuration
             AirmissConfiguration AirmissConfiguration,
             Action<IMiddlewareDescriptor> addMiddleware)
         {
-            _AirmissConfiguration = AirmissConfiguration ?? throw new ArgumentNullException(nameof(AirmissConfiguration));
+            _AirmissConfiguration =
+                AirmissConfiguration ?? throw new ArgumentNullException(nameof(AirmissConfiguration));
             _addMiddleware = addMiddleware ?? throw new ArgumentNullException(nameof(addMiddleware));
         }
 
-        public AirmissConfiguration Add<TMiddleware>(Predicate<IProcessorDescriptor>? shouldRun = null) where TMiddleware : IMiddleware
+        public AirmissConfiguration Add<TMiddleware>(Predicate<IProcessorDescriptor>? shouldRun = null)
+            where TMiddleware : IMiddleware
         {
             return Add(typeof(TMiddleware), shouldRun);
         }
@@ -25,9 +27,7 @@ namespace Airmiss.Configuration
         public AirmissConfiguration Add(Type middlewareType, Predicate<IProcessorDescriptor>? shouldRun = null)
         {
             if (!middlewareType.IsAssignableFrom(typeof(IMiddleware)))
-            {
                 throw new ArgumentException($"Middleware '{middlewareType.Name}' is not of type {nameof(IMiddleware)}");
-            }
 
             _addMiddleware(new MiddlewareDescriptor(middlewareType, shouldRun));
             return _AirmissConfiguration;

@@ -1,7 +1,6 @@
 ﻿using Airmiss.Core;
-using Airmiss.Internal.Processor.Hub;
 
-namespace Airmiss.Internal.Processor
+namespace Airmiss.Internal.Processor.Hub
 {
     internal interface IProcessorHubFactory
     {

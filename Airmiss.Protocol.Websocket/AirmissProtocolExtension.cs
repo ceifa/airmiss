@@ -1,6 +1,6 @@
-﻿using Airmiss.Configuration;
+﻿using System;
+using Airmiss.Configuration;
 using Airmiss.Protocol.Websocket.Listener;
-using System;
 
 namespace Airmiss.Protocol.Websocket
 {
@@ -10,10 +10,7 @@ namespace Airmiss.Protocol.Websocket
             this ProtocolConfiguration protocolConfiguration,
             params string[] addresses)
         {
-            if (protocolConfiguration is null)
-            {
-                throw new ArgumentNullException(nameof(protocolConfiguration));
-            }
+            if (protocolConfiguration is null) throw new ArgumentNullException(nameof(protocolConfiguration));
 
             var httpListener = new DefaultWebsocketListener(addresses);
             var websocketProtocol = new WebsocketProtocol(httpListener);

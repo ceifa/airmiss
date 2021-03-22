@@ -3,7 +3,9 @@ using Airmiss.Processor;
 
 namespace Airmiss.Exceptions
 {
+#pragma warning disable
     public class InvalidRouteException : Exception
+#pragma warning restore
     {
         internal InvalidRouteException(string route) : base(GetErrorMessage(route))
         {

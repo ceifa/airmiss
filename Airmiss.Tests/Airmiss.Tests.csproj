@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>net5.0</TargetFramework>
 		<LangVersion>9.0</LangVersion>
-
+		<NoWarn>RCS1090</NoWarn>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 

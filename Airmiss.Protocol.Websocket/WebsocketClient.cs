@@ -1,10 +1,10 @@
-﻿using Airmiss.Core;
-using System;
+﻿using System;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using Airmiss.Core;
 
 namespace Airmiss.Protocol.Websocket
 {
@@ -16,16 +16,17 @@ namespace Airmiss.Protocol.Websocket
             WebSocket = webSocket;
         }
 
-        public string Identity { get; }
-
         internal WebSocket WebSocket { get; }
+
+        public string Identity { get; }
 
         public Task SendAsync<T>(string correlationId, T content, CancellationToken cancellationToken)
         {
             return SendAsync(correlationId, typeof(T), content, cancellationToken);
         }
 
-        public Task SendAsync(string correlationId, Type contentType, object content, CancellationToken cancellationToken)
+        public Task SendAsync(string correlationId, Type contentType, object content,
+            CancellationToken cancellationToken)
         {
             var correlationIdBytes = Encoding.UTF8.GetBytes(correlationId);
             var serializedContentBytes = JsonSerializer.SerializeToUtf8Bytes(content, contentType);

@@ -2,7 +2,9 @@
 
 namespace Airmiss.Exceptions
 {
+#pragma warning disable
     public class ProcessorNotFoundException : Exception
+#pragma warning restore
     {
         internal ProcessorNotFoundException()
         {

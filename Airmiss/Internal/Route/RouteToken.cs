@@ -8,7 +8,7 @@ namespace Airmiss.Internal
         private const string VariableNameRegexGroup = nameof(VariableName);
 
         private static readonly Regex VariableRegex =
-            new Regex($"^{{(?<{VariableNameRegexGroup}>.*?)}}$", RegexOptions.Compiled);
+            new($"^{{(?<{VariableNameRegexGroup}>.*?)}}$", RegexOptions.Compiled);
 
         private readonly string _token;
         private readonly Lazy<string?> _variableNameLazy;

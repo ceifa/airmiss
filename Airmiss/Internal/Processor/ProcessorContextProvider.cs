@@ -1,4 +1,5 @@
-﻿using Airmiss.Messaging;
+﻿using Airmiss.Internal.Processor.Hub;
+using Airmiss.Messaging;
 
 namespace Airmiss.Internal.Processor
 {

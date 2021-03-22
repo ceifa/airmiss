@@ -11,8 +11,8 @@ namespace Airmiss.Internal
 {
     internal class MessageProcessor : IMessageProcessor
     {
-        private readonly IProcessorContextProvider _processorContextProvider;
         private readonly IContextProvider _contextProvider;
+        private readonly IProcessorContextProvider _processorContextProvider;
         private readonly IProcessorInvoker _processorInvoker;
 
         public MessageProcessor(
@@ -25,13 +25,14 @@ namespace Airmiss.Internal
             _processorInvoker = processorInvoker;
         }
 
-        public async Task<ProcessorResult> ProcessAsync(IClient sender, Message message, CancellationToken cancellationToken)
+        public async Task<ProcessorResult> ProcessAsync(IClient sender, Message message,
+            CancellationToken cancellationToken)
         {
             if (message == null)
                 throw new ArgumentNullException(nameof(message));
 
             using var processorContext = _processorContextProvider.GetProcessorContext(message);
-            var context =_contextProvider.GetContext(sender, processorContext, message, cancellationToken);
+            var context = _contextProvider.GetContext(sender, processorContext, message, cancellationToken);
 
             var resultType = processorContext.ProcessorDescriptor.ProcessorMethod.ReturnType;
             var result = await _processorInvoker.InvokeAsync(processorContext, context, cancellationToken);
@@ -42,13 +43,10 @@ namespace Airmiss.Internal
 
                 var taskType = result.GetType();
 
-                if (!taskType.IsGenericType)
-                {
-                    return ProcessorResult.Empty;
-                }
+                if (!taskType.IsGenericType) return ProcessorResult.Empty;
 
                 resultType = taskType.GetGenericArguments()[0];
-                result = taskType.GetProperty(nameof(Task<object>.Result))?.GetValue(awaitable);
+                result = taskType.GetProperty(nameof(Task<object?>.Result))?.GetValue(awaitable);
             }
 
             return new ProcessorResult(resultType, result);

@@ -1,17 +1,18 @@
-﻿using Airmiss.Core;
-using Airmiss.Internal.Processor;
-using Airmiss.Messaging;
-using Airmiss.Processor;
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Airmiss.Core;
+using Airmiss.Internal.Processor;
+using Airmiss.Messaging;
+using Airmiss.Processor;
 
 namespace Airmiss.Internal.Client
 {
     internal class ContextProvider : IContextProvider
     {
-        public IContext GetContext(IClient client, ProcessorContext processorContext, Message message, CancellationToken cancellationToken)
+        public IContext GetContext(IClient client, ProcessorContext processorContext, Message message,
+            CancellationToken cancellationToken)
         {
             var expectedParameters = processorContext.ProcessorDescriptor.ProcessorMethod.GetParameters();
             var arguments = expectedParameters.Select(ep =>
@@ -31,7 +32,7 @@ namespace Airmiss.Internal.Client
                 return type.IsValueType ? Activator.CreateInstance(type) : default;
             }).ToArray();
 
-            return new ClientContext(client, processorContext.ProcessorDescriptor, arguments ?? Array.Empty<object?>());
+            return new ClientContext(client, processorContext.ProcessorDescriptor, arguments);
         }
     }
 }

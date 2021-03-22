@@ -1,13 +1,14 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Airmiss.Core;
 using Airmiss.Internal.Client;
 using Airmiss.Internal.Middleware;
 using Airmiss.Internal.Processor;
 using Airmiss.Internal.Processor.Hub;
 using Airmiss.Internal.Protocol;
+using Airmiss.Internal.TypeActivator;
 using Airmiss.Messaging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Airmiss.Internal
 {

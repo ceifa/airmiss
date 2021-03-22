@@ -1,5 +1,5 @@
-﻿using Airmiss.Core;
-using System;
+﻿using System;
+using Airmiss.Core;
 
 namespace Airmiss.Internal.Middleware
 {

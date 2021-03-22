@@ -6,6 +6,7 @@ namespace Airmiss.Internal.Processor
 {
     internal interface IProcessorInvoker
     {
-        Task<object?> InvokeAsync(ProcessorContext processorContext, IContext context, CancellationToken cancellationToken);
+        Task<object?> InvokeAsync(ProcessorContext processorContext, IContext context,
+            CancellationToken cancellationToken);
     }
 }

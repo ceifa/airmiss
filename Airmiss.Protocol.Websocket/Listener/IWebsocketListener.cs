@@ -1,6 +1,6 @@
-﻿using Airmiss.Core;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
+using Airmiss.Core;
 
 namespace Airmiss.Protocol.Websocket.Listener
 {

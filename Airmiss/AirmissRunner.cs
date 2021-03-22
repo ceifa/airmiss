@@ -6,9 +6,9 @@ using Airmiss.Messaging;
 
 namespace Airmiss
 {
-    public class AirmissRunner : IDisposable
+    public sealed class AirmissRunner : IDisposable
     {
-        private readonly object _locker = new object();
+        private readonly object _locker = new();
 
         private readonly IMessageProcessor _messageProcessor;
         private readonly IMessageProtocol _messageProtocol;
@@ -21,6 +21,11 @@ namespace Airmiss
 
         public bool IsRunning { get; private set; }
 
+        public void Dispose()
+        {
+            if (!IsRunning && _messageProtocol is IDisposable disposableProtocol) disposableProtocol.Dispose();
+        }
+
         public Task StartAsync(CancellationToken cancellationToken = default)
         {
             lock (_locker)
@@ -28,7 +33,7 @@ namespace Airmiss
                 try
                 {
                     new ThreadStart(() =>
-                        _messageProtocol.StartAsync(_messageProcessor, cancellationToken))
+                            _messageProtocol.StartAsync(_messageProcessor, cancellationToken))
                         .Invoke();
 
                     return Task.CompletedTask;
@@ -42,10 +47,7 @@ namespace Airmiss
 
         public Task StopAsync(CancellationToken cancellationToken = default)
         {
-            if (!IsRunning)
-            {
-                throw new InvalidOperationException("Runner cannot be stop because it's not running");
-            }
+            if (!IsRunning) throw new InvalidOperationException("Runner cannot be stop because it's not running");
 
             lock (_locker)
             {
@@ -57,14 +59,6 @@ namespace Airmiss
                 {
                     IsRunning = false;
                 }
-            }
-        }
-
-        public void Dispose()
-        {
-            if (!IsRunning && _messageProtocol is IDisposable disposableProtocol)
-            {
-                disposableProtocol.Dispose();
             }
         }
     }

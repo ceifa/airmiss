@@ -16,6 +16,6 @@ namespace Airmiss.Processor
 
         public bool IsEmpty => Type == null && Result == null;
 
-        public static readonly ProcessorResult Empty = new ProcessorResult();
+        public static readonly ProcessorResult Empty = new();
     }
 }

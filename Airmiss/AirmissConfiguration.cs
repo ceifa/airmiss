@@ -1,14 +1,14 @@
 ﻿using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Airmiss.Configuration;
 using Airmiss.Internal;
 using Airmiss.Internal.Processor.Hub;
 using Airmiss.Internal.TypeActivator;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Airmiss
 {
-    public class AirmissConfiguration
+    public sealed class AirmissConfiguration
     {
         private readonly IServiceCollection _serviceCollection;
 
@@ -40,6 +40,9 @@ namespace Airmiss
             return provider.GetRequiredService<AirmissRunner>();
         }
 
-        private void Add<T>(T instance) where T : class => _serviceCollection.AddSingleton(instance);
+        private void Add<T>(T instance) where T : class
+        {
+            _serviceCollection.AddSingleton(instance);
+        }
     }
 }

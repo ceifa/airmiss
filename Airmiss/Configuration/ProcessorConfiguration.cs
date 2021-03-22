@@ -17,7 +17,8 @@ namespace Airmiss.Configuration
             AirmissConfiguration AirmissConfiguration,
             Action<IProcessorDescriptor> addProcessor)
         {
-            _AirmissConfiguration = AirmissConfiguration ?? throw new ArgumentNullException(nameof(AirmissConfiguration));
+            _AirmissConfiguration =
+                AirmissConfiguration ?? throw new ArgumentNullException(nameof(AirmissConfiguration));
             _addProcessor = addProcessor ?? throw new ArgumentNullException(nameof(addProcessor));
         }
 
@@ -54,10 +55,7 @@ namespace Airmiss.Configuration
             if (hubType == null)
                 throw new ArgumentNullException(nameof(hubType));
 
-            foreach (var hubMethod in hubType.GetMethods())
-            {
-                Add(hubType, hubMethod);
-            }
+            foreach (var hubMethod in hubType.GetMethods()) Add(hubType, hubMethod);
 
             return _AirmissConfiguration;
         }
@@ -77,8 +75,9 @@ namespace Airmiss.Configuration
             {
                 var hubMethodRoute = hubMethodAttribute.Route;
 
-                var routes = hubTypeAttributes.Length == 0 ? new[] { hubMethodRoute } :
-                    hubTypeAttributes.Select(attribute => attribute.RoutePrefix + hubMethodRoute);
+                var routes = hubTypeAttributes.Length == 0
+                    ? new[] {hubMethodRoute}
+                    : hubTypeAttributes.Select(attribute => attribute.RoutePrefix + hubMethodRoute);
 
                 Add(hubType, routes, hubMethodAttribute.Verb, processor, GetLocalMiddlewares(hubType, processor));
             }
@@ -87,7 +86,8 @@ namespace Airmiss.Configuration
         }
 
 
-        private void Add(Type hubType, IEnumerable<Route> routes, Verb verb, MethodInfo processor, IEnumerable<Type> middlewares)
+        private void Add(Type hubType, IEnumerable<Route> routes, Verb verb, MethodInfo processor,
+            IEnumerable<Type> middlewares)
         {
             if (hubType == null)
                 throw new ArgumentNullException(nameof(hubType));
@@ -103,11 +103,13 @@ namespace Airmiss.Configuration
 
             var descriptor = new ProcessorDescriptor(hubType, routes.Select(r => r.EnsureIsValid()), verb, processor);
 
-            bool LocalMiddlewareShouldRun(IProcessorDescriptor processorDescriptor) => processorDescriptor.Equals(descriptor);
-            foreach (var middleware in middlewares)
+            bool LocalMiddlewareShouldRun(IProcessorDescriptor processorDescriptor)
             {
-                _AirmissConfiguration.Middleware.Add(middleware, LocalMiddlewareShouldRun);
+                return processorDescriptor.Equals(descriptor);
             }
+
+            foreach (var middleware in middlewares)
+                _AirmissConfiguration.Middleware.Add(middleware, LocalMiddlewareShouldRun);
 
             _addProcessor(descriptor);
         }

@@ -7,7 +7,9 @@ namespace Airmiss.TestConsole
 {
     public static class Program
     {
+#pragma warning disable
         internal static async Task Main(string[] args)
+#pragma warning restore
         {
             var runner = new AirmissConfiguration()
                 .Processor.AddCurrentAssembly()
@@ -15,7 +17,7 @@ namespace Airmiss.TestConsole
                 .Protocol.Websocket("http://localhost:1338/")
                 .GetRunner();
 
-            await runner.StartAsync();
+            await runner.StartAsync().ConfigureAwait(false);
 
             Console.WriteLine("Started");
             Console.ReadKey();

@@ -1,17 +1,17 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Airmiss.Core;
 using Airmiss.Internal.TypeActivator;
 using Airmiss.Messaging;
 using Airmiss.Processor;
-using System.Threading;
-using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace Airmiss.Internal.Processor
+namespace Airmiss.Internal
 {
     internal class ServiceScopedMessageProcessorDecorator : IMessageProcessor
     {
-        private readonly IMessageProcessor _messageProcessor;
         private readonly IClientServiceProvider _clientServiceProvider;
+        private readonly IMessageProcessor _messageProcessor;
 
         public ServiceScopedMessageProcessorDecorator(
             IMessageProcessor messageProcessor,
@@ -24,7 +24,7 @@ namespace Airmiss.Internal.Processor
         public Task<ProcessorResult> ProcessAsync(IClient sender, Message message, CancellationToken cancellationToken)
         {
             using var scopedServiceProvider = _clientServiceProvider.ServiceProvider.CreateScope();
-            var scopedMessageProcessor = (IMessageProcessor)scopedServiceProvider
+            var scopedMessageProcessor = (IMessageProcessor) scopedServiceProvider
                 .ServiceProvider.GetRequiredService(_messageProcessor.GetType());
 
             return scopedMessageProcessor.ProcessAsync(sender, message, cancellationToken);
