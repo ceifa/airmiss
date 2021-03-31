@@ -4,7 +4,7 @@
 		<TargetFramework>net5.0</TargetFramework>
 		<LangVersion>9.0</LangVersion>
 		<Nullable>enable</Nullable>
-		<Version>1.0.1</Version>
+		<Version>1.0.2</Version>
 		<NoWarn>RCS1229;RCS1090;S4457;S3881</NoWarn>
 	</PropertyGroup>
 
