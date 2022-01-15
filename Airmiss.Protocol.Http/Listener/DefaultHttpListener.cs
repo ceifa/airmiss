@@ -73,7 +73,7 @@ namespace Airmiss.Protocol.Http.Listener
             if (Convert.GetTypeCode(result.Result) == TypeCode.Object)
             {
                 context.Response.ContentType = "application/json; charset=utf-8";
-                await JsonSerializer.SerializeAsync(context.Response.OutputStream, result.Result, result.Type, default,
+                await JsonSerializer.SerializeAsync(context.Response.OutputStream, result.Result, result.Type, options: default,
                     cancellationToken);
             }
             else

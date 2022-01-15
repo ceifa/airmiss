@@ -1,14 +1,17 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<OutputType>Exe</OutputType>
 		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>9.0</LangVersion>
+		<Version>1.0.2</Version>
+		<NoWarn>RCS1090</NoWarn>
 	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="System.Text.Json" Version="6.0.1" />
+	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Airmiss.Protocol.Http\Airmiss.Protocol.Http.csproj" />
-		<ProjectReference Include="..\Airmiss.Protocol.Websocket\Airmiss.Protocol.Websocket.csproj" />
 		<ProjectReference Include="..\Airmiss\Airmiss.csproj" />
 	</ItemGroup>
 
