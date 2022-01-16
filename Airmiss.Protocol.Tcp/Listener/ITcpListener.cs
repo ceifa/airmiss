@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using Airmiss.Core;
 
-namespace Airmiss.Protocol.Websocket.Listener
+namespace Airmiss.Protocol.Tcp.Listener
 {
-    internal interface IWebsocketListener : IDisposable
+    internal interface ITcpListener : IDisposable
     {
         Task Start(IMessageProcessor messageProcessor, CancellationToken cancellationToken);
 

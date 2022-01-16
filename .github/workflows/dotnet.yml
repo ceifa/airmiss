@@ -15,7 +15,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.101
+        dotnet-version: 6.0.101
 
     - name: Restore dependencies
       run: dotnet restore
@@ -26,20 +26,26 @@ jobs:
     - name: Test
       run: dotnet test --no-build --verbosity normal
 
-    - name: publish airmiss
+    - name: Publish Airmiss
       uses: rohith/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Airmiss/Airmiss.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}  
   
-    - name: publish airmiss http
+    - name: Publish Airmiss HTTP
       uses: rohith/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Airmiss.Protocol.Http/Airmiss.Protocol.Http.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
         
-    - name: publish airmiss websocket
+    - name: Publish Airmiss Websocket
       uses: rohith/publish-nuget@v2
       with:
         PROJECT_FILE_PATH: Airmiss.Protocol.Websocket/Airmiss.Protocol.Websocket.csproj
+        NUGET_KEY: ${{secrets.NUGET_API_KEY}}
+
+    - name: Publish Airmiss TCP
+      uses: rohith/publish-nuget@v2
+      with:
+        PROJECT_FILE_PATH: Airmiss.Protocol.Tcp/Airmiss.Protocol.Tcp.csproj
         NUGET_KEY: ${{secrets.NUGET_API_KEY}}
