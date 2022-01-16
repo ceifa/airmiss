@@ -79,21 +79,24 @@ namespace Airmiss.Protocol.Tcp.Listener
                     }
                     else
                     {
-                        var result = await messageProcessor.ProcessAsync(tcpClient, message, cancellationToken);
-                        await tcpClient.SendAsync(message.CorrelationId, result.Type, result.Result, cancellationToken);
+                        try
+                        {
+                            var result = await messageProcessor.ProcessAsync(tcpClient, message, cancellationToken);
+                            await tcpClient.SendAsync(message.CorrelationId, result.Type, result.Result, cancellationToken);
+                        }
+                        catch (Exception ex)
+                        {
+                            var airmissException = ex as AirmissException ?? new AirmissException(500, ex.Message);
+                            if (stream.CanWrite)
+                            {
+                                await tcpClient.SendAsync(message.CorrelationId, airmissException, cancellationToken);
+                            }
+                        }
                     }
                 }
                 catch (Exception ex) when (ex is IOException || ex is SocketException)
                 {
                     break;
-                }
-                catch (Exception ex)
-                {
-                    var airmissException = ex as AirmissException ?? new AirmissException(500, ex.Message);
-                    if (stream.CanWrite)
-                    {
-                        await stream.WriteAsync(airmissException.SerializeUtf8(), cancellationToken);
-                    }
                 }
             }
 

@@ -6,6 +6,6 @@ namespace Airmiss.Protocol.Tcp
     {
         public string CorrelationId { get; set; }
 
-        public JsonElement Content { get; set; }
+        public JsonElement? Content { get; set; }
     }
 }

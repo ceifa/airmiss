@@ -89,5 +89,24 @@ namespace Airmiss.Tests.Processor
 
             Assert.Equal(DummyHub.DummyReturn, result);
         }
+
+        [Fact]
+        public async Task ShouldReturnNullOnVoidProcessor()
+        {
+            var protocol = new DummyProtocol();
+            var runner = new AirmissConfiguration()
+                .Processor.AddHub<DummyHub>()
+                .Protocol.Add(protocol)
+                .GetRunner();
+            await runner.StartAsync();
+
+            var result = await protocol.ProcessAsync<object>(new Message
+            {
+                Route = nameof(DummyHub.Void),
+                Verb = Verb.Get
+            });
+
+            Assert.Null(result);
+        }
     }
 }

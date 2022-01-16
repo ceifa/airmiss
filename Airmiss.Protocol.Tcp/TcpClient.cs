@@ -31,7 +31,7 @@ namespace Airmiss.Protocol.Tcp
         public async Task SendAsync(string correlationId, Type contentType, object content,
             CancellationToken cancellationToken)
         {
-            var serializedContentBytes = JsonSerializer.SerializeToElement(content, contentType, DefaultJsonSerializerOptions.Options);
+            JsonElement? serializedContentBytes = content is null ? null : JsonSerializer.SerializeToElement(content, contentType, DefaultJsonSerializerOptions.Options);
             var response = new MessageResponseContainer
             {
                 CorrelationId = correlationId,

@@ -27,5 +27,11 @@ namespace Airmiss.Tests.Processor
             await Task.Delay(1000);
             return DummyReturn;
         }
+
+        [Processor(nameof(Void), Verb.Get)]
+        public void Void()
+        {
+            // Do nothing
+        }
     }
 }
