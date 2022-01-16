@@ -94,6 +94,8 @@ namespace Airmiss.Protocol.Websocket.Listener
                             await webSocket.SendAsync(outputBuffer, WebSocketMessageType.Text, true, cancellationToken);
                         }
                     }
+
+                    webSocket.Dispose();
                 }
                 else
                 {
@@ -139,6 +141,11 @@ namespace Airmiss.Protocol.Websocket.Listener
             currentPointer += idx + 1;
 
             return message[..idx];
+        }
+
+        public void Dispose()
+        {
+            _httpListener.Close();
         }
     }
 }

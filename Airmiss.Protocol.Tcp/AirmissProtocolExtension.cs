@@ -1,6 +1,6 @@
 ﻿using System;
 using Airmiss.Configuration;
-using Airmiss.Protocol.Http.Listener;
+using Airmiss.Protocol.Tcp.Listener;
 
 namespace Airmiss.Protocol.Tcp
 {
@@ -8,12 +8,13 @@ namespace Airmiss.Protocol.Tcp
     {
         public static AirmissConfiguration Tcp(
             this ProtocolConfiguration protocolConfiguration,
-            params string[] addresses)
+            string address,
+            int port)
         {
             if (protocolConfiguration is null) throw new ArgumentNullException(nameof(protocolConfiguration));
 
-            var httpListener = new DefaultTcpListener(addresses);
-            var httpProtocol = new HttpProtocol(httpListener);
+            var httpListener = new DefaultTcpListener(address, port);
+            var httpProtocol = new TcpProtocol(httpListener);
 
             return protocolConfiguration.Add(httpProtocol);
         }

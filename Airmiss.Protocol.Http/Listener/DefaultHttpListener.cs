@@ -110,5 +110,10 @@ namespace Airmiss.Protocol.Http.Listener
                 Route = context.Request.Url
             };
         }
+
+        public void Dispose()
+        {
+            _httpListener.Close();
+        }
     }
 }

@@ -1,18 +1,19 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Airmiss.Core;
 using Airmiss.Messaging;
-using Airmiss.Protocol.Http.Listener;
+using Airmiss.Protocol.Tcp.Listener;
 
 namespace Airmiss.Protocol.Tcp
 {
-    internal class TcpProtocol : IMessageProtocol
+    internal class TcpProtocol : IMessageProtocol, IDisposable
     {
-        private readonly ITcpListener _httpListener;
+        private readonly ITcpListener _tcpListener;
 
-        public TcpProtocol(ITcpListener httpListener)
+        public TcpProtocol(ITcpListener tcpListener)
         {
-            _httpListener = httpListener;
+            _tcpListener = tcpListener;
         }
 
         public Task SendAsync<T>(string receiverIdentity, T message, CancellationToken cancellationToken)
@@ -22,12 +23,17 @@ namespace Airmiss.Protocol.Tcp
 
         public Task StartAsync(IMessageProcessor messageProcessor, CancellationToken cancellationToken)
         {
-            return _httpListener.Start(messageProcessor, cancellationToken);
+            return _tcpListener.Start(messageProcessor, cancellationToken);
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            return _httpListener.Stop(cancellationToken);
+            return _tcpListener.Stop(cancellationToken);
+        }
+
+        public void Dispose()
+        {
+            _tcpListener.Dispose();
         }
     }
 }
